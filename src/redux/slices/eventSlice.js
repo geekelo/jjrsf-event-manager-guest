@@ -3,27 +3,30 @@ import axiosInstance from '../../config';
 
 export const fetchEvents = createAsyncThunk(
   'events/fetchEvents',
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get('/api/v1/events');
       return res.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch feedbacks"
+        error.response?.data?.message || "Failed to fetch events"
       );
     }
-    
   }
 );
 
 const eventsSlice = createSlice({
   name: 'events',
   initialState: {
-    filteredEvents: [], 
+    filteredEvents: [],
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    setFilteredEvents: (state, action) => {
+      state.filteredEvents = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchEvents.pending, (state) => {
@@ -36,9 +39,10 @@ const eventsSlice = createSlice({
       })
       .addCase(fetchEvents.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       });
   },
 });
 
+export const { setFilteredEvents } = eventsSlice.actions;
 export default eventsSlice.reducer;

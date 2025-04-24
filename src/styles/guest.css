@@ -45,3 +45,10 @@
     margin-top: 2rem;
   }
   
+  .guest-event-image{
+    width: 200px;
+    height: 200px;
+  }
+  .guest-event-card{
+    height: 300px;
+  }
