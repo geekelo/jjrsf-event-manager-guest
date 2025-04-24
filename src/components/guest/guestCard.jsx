@@ -1,11 +1,16 @@
-import { CalendarDays } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+// GuestEventCard.js
+import { CalendarDays } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const GuestEventCard = ({ event, formatDate }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
 
   return (
-    <div className="guest-event-card" onClick={() => navigate(`/events/${event.id}`)}>
+    <div
+      className="guest-event-card"
+      onClick={() => navigate(`/event/${event.unique_id}`)} 
+    >
       <img
         src={event.image_url || "https://placehold.co/250x150"}
         alt={event.name}
@@ -21,7 +26,7 @@ const GuestEventCard = ({ event, formatDate }) => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default GuestEventCard
+export default GuestEventCard;
