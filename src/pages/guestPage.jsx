@@ -11,6 +11,8 @@ const GuestEventsPage = () => {
 
   useEffect(() => {
    const res = dispatch(fetchEvents());
+   
+  console.log(res)
   }, [dispatch]);
 
   const formatDate = (dateString) => {
@@ -29,7 +31,7 @@ const GuestEventsPage = () => {
     .sort((a, b) => new Date(b.end_date) - new Date(a.end_date));
 
   const eventsToShow = activeTab === "upcoming" ? upcomingEvents : pastEvents;
-
+console.log(filteredEvents)
   return (
     <div className="guest-events-container">
       <div className="guest-tabs">
