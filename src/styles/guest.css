@@ -1,0 +1,54 @@
+.guest-events-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .guest-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .guest-tab {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    background-color: #f3f4f6;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .guest-tab.active {
+    background-color: #1d4ed8;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .guest-tab:hover:not(.active) {
+    background-color: #e0e7ff;
+  }
+  
+  .guest-events-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .guest-loading-text,
+  .guest-no-events-text {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #555;
+    margin-top: 2rem;
+  }
+  
+  .guest-event-image{
+    width: 200px;
+    height: 200px;
+  }
+  .guest-event-card{
+    height: 300px;
+  }
