@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import guestReducer from './slices/guestSlice';
+import eventsReducer from './slices/eventSlice';
 
 export const store = configureStore({
   reducer: {
-    guest: guestReducer,
+    events: eventsReducer,
   },
 });
