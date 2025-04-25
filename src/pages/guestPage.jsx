@@ -44,12 +44,10 @@ const GuestEventsPage = () => {
               </div>
               <div className="premium-about-text">
                 <p>
-                  JJRSF Foundation is dedicated to fostering transformative experiences that inspire growth and create
-                  meaningful connections within our community.
+                We are driven to ensure that people fulfill their God-given purpose by pulling unbelievers out of the pit of sin which is unbelief in Jesus.
                 </p>
                 <p>
-                  Since our inception, we've been committed to developing leaders who are adaptive in bringing positive
-                  change and influential in advancing our shared vision for a better future.
+                And lifting believers out of the pit of religion and self effort in order for all to be saved and come to the knowledge of the truth.
                 </p>
 
                 <div className="premium-values">
@@ -62,8 +60,7 @@ const GuestEventsPage = () => {
                     <div className="value-content">
                       <h4>Our Mission</h4>
                       <p>
-                        To create impactful events that foster community growth, learning, and connection while
-                        providing valuable resources for personal development.
+                      Our mission drivers are to Pray the all power and help of God, Love by engaging in all forms of giving and Partner with people of like faith by providing support systems necessary for the advancement of the Kingdom of God.
                       </p>
                     </div>
                   </div>
@@ -80,8 +77,7 @@ const GuestEventsPage = () => {
                     <div className="value-content">
                       <h4>Our Vision</h4>
                       <p>
-                        To be the leading provider of transformative events that inspire change and create lasting
-                        impact in our communities and beyond.
+                      We aim at supporting Ministers, Ministries and the NEEDY.
                       </p>
                     </div>
                   </div>
