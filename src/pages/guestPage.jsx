@@ -47,7 +47,7 @@ const GuestEventsPage = () => {
                 We are driven to ensure that people fulfill their God-given purpose by pulling unbelievers out of the pit of sin which is unbelief in Jesus.
                 </p>
                 <p>
-                And lifting believers out of the pit of religion and self effort in order for all to be saved and come to the knowledge of the truth.
+                We aim at lifting believers out of the pit of religion and self effort in order for all to be saved and come to the knowledge of the truth.
                 </p>
 
                 <div className="premium-values">
