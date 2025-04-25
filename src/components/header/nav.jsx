@@ -47,7 +47,7 @@ const GuestNavbar = () => {
           <img src="/jjrsf-logo.png" alt="JJRSF Logo" className="premium-logo" />
           <div className="premium-logo-text">
             <h1>JJRSF</h1>
-            <span className="premium-logo-tagline">Event Portal</span>
+            <span className="premium-logo-tagline">Program Portal</span>
           </div>
         </div>
 

@@ -100,7 +100,7 @@ const HeroSection = () => {
             <h1>
               <span className="accent-text">JJRSF</span> Foundation
               <br />
-              Event Portal
+              Program Portal
             </h1>
             <p className="premium-hero-description">
               Discover transformative events designed to foster community, learning, and personal growth. Join us on a
