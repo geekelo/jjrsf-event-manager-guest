@@ -111,10 +111,7 @@ const FooterSection = () => {
                 <li><Phone size={16} />
                   <span>(+234)  809 676 7151
                   </span></li>
-                <li>
-                  <MapIcon size={16} />
-                  <span>123 Foundation St, City, ST 12345</span>
-                </li>
+               
               </ul>
             </div>
           </div>
