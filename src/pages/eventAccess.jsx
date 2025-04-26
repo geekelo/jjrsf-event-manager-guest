@@ -17,7 +17,7 @@ const GuestEventAccess = () => {
   const { singleEvent: event, loading, error } = useSelector((state) => state.events)
 
   const [accessMode, setAccessMode] = useState("otp")
-  const [input, setInput] = useState(["", "", "", "", ""])
+  const [input, setInput] = useState(["", "", "", "", "", ""]) // Updated to 6 digits
   const [formError, setFormError] = useState("")
   const [countdown, setCountdown] = useState("")
   const [eventStatus, setEventStatus] = useState("") // "upcoming", "ongoing", or "completed"
@@ -66,18 +66,25 @@ const GuestEventAccess = () => {
 
   const toggleMode = () => {
     setAccessMode((prev) => (prev === "otp" ? "email" : "otp"))
-    setInput(["", "", "", "", ""])
+    setInput(accessMode === "otp" ? [""] : ["", "", "", "", "", ""])
     setFormError("")
   }
 
   const handleValidation = () => {
-    if (accessMode === "otp" && input.join("").length !== 5) {
-      setFormError("Please enter a valid 5-digit OTP.")
+    if (accessMode === "otp" && input.join("").length !== 6) {
+      setFormError("Please enter a valid 6-digit OTP.")
     } else if (accessMode === "email" && !/\S+@\S+\.\S+/.test(input.join(""))) {
       setFormError("Please enter a valid email address.")
     } else {
       setFormError("")
-      console.log("Proceeding to event stream with:", input.join(""))
+
+      // Convert OTP to lowercase before sending
+      const accessValue = accessMode === "otp" ? input.join("").toLowerCase() : input.join("")
+
+      console.log("Proceeding to event stream with:", accessValue)
+
+      // Navigate to stream view page with event ID
+      navigate(`/stream/${unique_id}`)
     }
   }
 
@@ -214,9 +221,9 @@ const GuestEventAccess = () => {
                   ? "Join Live Now"
                   : "Watch Recording"}
             </h3>
-            <label>{accessMode === "otp" ? "Enter 5-digit OTP" : "Enter your Email"}</label>
+            <label>{accessMode === "otp" ? "Enter 6-digit OTP" : "Enter your Email"}</label>
 
-            {/* OTP Input as 5 separate boxes */}
+            {/* OTP Input as 6 separate boxes */}
             {accessMode === "otp" && (
               <div className="otp-input-container">
                 {input.map((char, idx) => (
@@ -231,7 +238,7 @@ const GuestEventAccess = () => {
                       setInput(newInput)
 
                       // Auto-focus next input field after entry
-                      if (e.target.value && idx < 4) {
+                      if (e.target.value && idx < 5) {
                         const nextInput = e.target.nextElementSibling
                         if (nextInput) {
                           nextInput.focus()
@@ -284,7 +291,7 @@ const GuestEventAccess = () => {
               ) : (
                 <>
                   <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-                  Use 5-digit OTP instead
+                  Use 6-digit OTP instead
                 </>
               )}
             </p>
