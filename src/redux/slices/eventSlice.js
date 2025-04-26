@@ -40,7 +40,7 @@ export const quickRegisterForEvent = createAsyncThunk(
   "events/quickRegisterForEvent",
   async ({ eventId, guestData }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(`/api/v1/event_attendees`, {
+      const res = await axiosInstance.post(`/api/v1/event_quick_registrations`, {
         event_id: eventId,
         guest: guestData,
       })
