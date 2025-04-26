@@ -31,8 +31,8 @@ const EventRegistration = () => {
     whatsapp: "",
     phone: "",
     gender: "",
-    is_member: false,
-    attendance_mode: "",
+    member: false,
+    preferred_attendance: "",
   })
 
   // Form validation state
@@ -89,8 +89,8 @@ const EventRegistration = () => {
       errors.gender = "Gender is required"
     }
 
-    if (!formData.attendance_mode) {
-      errors.attendance_mode = "Preferred attendance mode is required"
+    if (!formData.preferred_attendance) {
+      errors.preferred_attendance = "Preferred attendance mode is required"
     }
 
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
@@ -329,31 +329,31 @@ const EventRegistration = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="attendance_mode">
+                    <label htmlFor="preferred_attendance">
                       Preferred Attendance <span className="required">*</span>
                     </label>
                     <div className="select-wrapper">
                       <select
-                        id="attendance_mode"
-                        name="attendance_mode"
-                        value={formData.attendance_mode}
+                        id="preferred_attendance"
+                        name="preferred_attendance"
+                        value={formData.preferred_attendance}
                         onChange={handleChange}
-                        className={validationErrors.attendance_mode ? "error" : ""}
+                        className={validationErrors.preferred_attendance ? "error" : ""}
                       >
                         <option value="">Select attendance mode</option>
-                        <option value="Online">Online</option>
-                        <option value="Offline">Offline</option>
+                        <option value="online">online</option>
+                        <option value="offline">offline</option>
                       </select>
                     </div>
-                    {validationErrors.attendance_mode && (
-                      <p className="error-message">{validationErrors.attendance_mode}</p>
+                    {validationErrors.preferred_attendance && (
+                      <p className="error-message">{validationErrors.preferred_attendance}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="form-group checkbox-group">
                   <label className="checkbox-container">
-                    <input type="checkbox" name="is_member" checked={formData.is_member} onChange={handleChange} />
+                    <input type="checkbox" name="member" checked={formData.member} onChange={handleChange} />
                     <span className="checkmark"></span>I am a member of JJRSF Foundation
                   </label>
                 </div>

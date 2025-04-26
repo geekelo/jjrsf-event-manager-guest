@@ -5,7 +5,8 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import "../styles/access.css"
 import { fetchSingleEvent } from "../redux/slices/eventSlice"
-import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye } from "lucide-react"
+import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users } from "lucide-react"
+import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
 
 const GuestEventAccess = () => {
   const { unique_id } = useParams()
@@ -19,6 +20,7 @@ const GuestEventAccess = () => {
   const [input, setInput] = useState(["", "", "", "", ""])
   const [formError, setFormError] = useState("")
   const [countdown, setCountdown] = useState("")
+  const [showQuickRegistration, setShowQuickRegistration] = useState(false)
 
   useEffect(() => {
     if (unique_id) {
@@ -65,6 +67,14 @@ const GuestEventAccess = () => {
     }
   }
 
+  const handleQuickRegistration = () => {
+    setShowQuickRegistration(true)
+  }
+
+  const closeQuickRegistration = () => {
+    setShowQuickRegistration(false)
+  }
+
   if (loading) {
     return (
       <div className="event-loading">
@@ -85,8 +95,19 @@ const GuestEventAccess = () => {
   }
 
   const isRegistrationClosed = new Date() > new Date(event.registration_deadline)
+  const isEventPastOrOngoing = new Date() >= new Date(event.start_date)
   const showAttend =
     new Date(event.start_date).toDateString() === new Date().toDateString() && (event.online || event.onsite)
+
+  // Determine event type tag
+  let eventTypeTag = ""
+  if (event.online && event.onsite) {
+    eventTypeTag = "Hybrid (Online & Onsite)"
+  } else if (event.online) {
+    eventTypeTag = "Online"
+  } else if (event.onsite) {
+    eventTypeTag = "Onsite"
+  }
 
   return (
     <div className="event-access-wrapper">
@@ -102,10 +123,53 @@ const GuestEventAccess = () => {
       </p>
 
       <div className="event-card">
+        {event.image_url && (
+          <div className="event-image-container">
+            <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
+          </div>
+        )}
+
+        <div className="event-type-tag">
+          <Tag size={16} />
+          <span>{eventTypeTag}</span>
+        </div>
+
+        <div className="event-details-section">
+          {event.description && (
+            <div className="event-description">
+              <h3>About This Event</h3>
+              <p>{event.description}</p>
+            </div>
+          )}
+
+          <div className="event-meta-info">
+            {event.location && (
+              <div className="meta-detail">
+                <MapPin size={18} />
+                <span>Location: {event.location}</span>
+              </div>
+            )}
+
+            <div className="meta-detail">
+              <Calendar size={18} />
+              <span>
+                Registration Deadline:{" "}
+                {new Date(event.registration_deadline).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </div>
+          </div>
+        </div>
+
         {isRegistrationClosed ? (
           <p className="event-status closed">Registration Closed</p>
         ) : (
-          <button className="register-btn">Register Now</button>
+          <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
+            Register Now
+          </button>
         )}
 
         <div className="countdown-container">
@@ -114,6 +178,16 @@ const GuestEventAccess = () => {
             {countdown}
           </p>
         </div>
+
+        {isEventPastOrOngoing && (
+          <div className="quick-registration-section">
+            <button onClick={handleQuickRegistration} className="quick-register-btn">
+              <Users size={18} />
+              Quick Registration
+            </button>
+            <p className="quick-reg-note">Already at the event? Register quickly with minimal information.</p>
+          </div>
+        )}
 
         {showAttend && (
           <div className="access-section">
@@ -195,6 +269,8 @@ const GuestEventAccess = () => {
           </div>
         )}
       </div>
+
+      {showQuickRegistration && event && <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />}
     </div>
   )
 }

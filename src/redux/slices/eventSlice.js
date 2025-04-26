@@ -24,7 +24,26 @@ export const registerForEvent = createAsyncThunk(
   "events/registerForEvent",
   async ({ eventId, formData }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(`/api/v1/event_quick_registrations`, {event_id: (eventId), event_attendee:formData})
+      const res = await axiosInstance.post(`/api/v1/event_attendees`, {
+        event_id: eventId,
+        event_attendee: formData,
+      })
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to register for event")
+    }
+  },
+)
+
+// New action for quick registration
+export const quickRegisterForEvent = createAsyncThunk(
+  "events/quickRegisterForEvent",
+  async ({ eventId, guestData }, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post(`/api/v1/event_attendees`, {
+        event_id: eventId,
+        guest: guestData,
+      })
       return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to register for event")
@@ -42,6 +61,9 @@ const eventsSlice = createSlice({
     registrationLoading: false,
     registrationError: null,
     registrationSuccess: false,
+    quickRegistrationLoading: false,
+    quickRegistrationError: null,
+    quickRegistrationSuccess: false,
   },
   reducers: {
     setFilteredEvents: (state, action) => {
@@ -51,6 +73,11 @@ const eventsSlice = createSlice({
       state.registrationLoading = false
       state.registrationError = null
       state.registrationSuccess = false
+    },
+    resetQuickRegistration: (state) => {
+      state.quickRegistrationLoading = false
+      state.quickRegistrationError = null
+      state.quickRegistrationSuccess = false
     },
   },
   extraReducers: (builder) => {
@@ -95,8 +122,23 @@ const eventsSlice = createSlice({
         state.registrationLoading = false
         state.registrationError = action.payload || action.error.message
       })
+
+      // Handle quick registration actions
+      .addCase(quickRegisterForEvent.pending, (state) => {
+        state.quickRegistrationLoading = true
+        state.quickRegistrationError = null
+        state.quickRegistrationSuccess = false
+      })
+      .addCase(quickRegisterForEvent.fulfilled, (state) => {
+        state.quickRegistrationLoading = false
+        state.quickRegistrationSuccess = true
+      })
+      .addCase(quickRegisterForEvent.rejected, (state, action) => {
+        state.quickRegistrationLoading = false
+        state.quickRegistrationError = action.payload || action.error.message
+      })
   },
 })
 
-export const { setFilteredEvents, resetRegistration } = eventsSlice.actions
+export const { setFilteredEvents, resetRegistration, resetQuickRegistration } = eventsSlice.actions
 export default eventsSlice.reducer

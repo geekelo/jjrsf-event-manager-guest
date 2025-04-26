@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { CalendarDays, MapPin, CalendarCheck, ChevronRight, Star } from "lucide-react"
+import { CalendarDays, MapPin, CalendarCheck, ChevronRight, Star, Clock } from "lucide-react"
 
 const EventsSection = ({ events, loading }) => {
   const navigate = useNavigate()
@@ -15,15 +15,30 @@ const EventsSection = ({ events, loading }) => {
 
   const today = new Date()
 
+  // Filter for upcoming events (end_date is in the future)
   const upcomingEvents = events
-    .filter((event) => new Date(event.end_date) >= today)
+    .filter((event) => new Date(event.start_date) > today)
     .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
 
+  // Filter for ongoing events (today is between start_date and end_date)
+  const ongoingEvents = events
+    .filter((event) => new Date(event.start_date) <= today && new Date(event.end_date) >= today)
+    .sort((a, b) => new Date(a.end_date) - new Date(b.end_date))
+
+  // Filter for past events (end_date is in the past)
   const pastEvents = events
     .filter((event) => new Date(event.end_date) < today)
     .sort((a, b) => new Date(b.end_date) - new Date(a.end_date))
 
-  const eventsToShow = activeTab === "upcoming" ? upcomingEvents : pastEvents
+  // Determine which events to show based on active tab
+  let eventsToShow = []
+  if (activeTab === "upcoming") {
+    eventsToShow = upcomingEvents
+  } else if (activeTab === "ongoing") {
+    eventsToShow = ongoingEvents
+  } else {
+    eventsToShow = pastEvents
+  }
 
   const handleViewEvent = (eventId) => {
     navigate(`/event/${eventId}`)
@@ -35,7 +50,13 @@ const EventsSection = ({ events, loading }) => {
         <div className="premium-section-intro">
           <div className="premium-section-header">
             <span className="section-kicker">Discover Our</span>
-            <h2>{activeTab === "upcoming" ? "Upcoming Events" : "Past Events"}</h2>
+            <h2>
+              {activeTab === "upcoming"
+                ? "Upcoming Events"
+                : activeTab === "ongoing"
+                  ? "Ongoing Events"
+                  : "Past Events"}
+            </h2>
           </div>
           <div className="section-decorator">
             <span></span>
@@ -51,6 +72,13 @@ const EventsSection = ({ events, loading }) => {
           >
             <CalendarCheck size={18} />
             Upcoming Events
+          </button>
+          <button
+            className={`premium-tab-button ${activeTab === "ongoing" ? "active" : ""}`}
+            onClick={() => setActiveTab("ongoing")}
+          >
+            <Clock size={18} />
+            Ongoing Events
           </button>
           <button
             className={`premium-tab-button ${activeTab === "past" ? "active" : ""}`}
@@ -76,9 +104,8 @@ const EventsSection = ({ events, loading }) => {
             {eventsToShow.map((event) => (
               <div className="premium-event-card" key={event.id} onClick={() => handleViewEvent(event.unique_id)}>
                 <div className="premium-event-image">
-                
-                    <img src="/featured.jpeg" alt={event.name} className="event-placeholder-logo" />
-           
+                  <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
+
                   <div className="event-date-badge">
                     <span className="date-day">{new Date(event.start_date).getDate()}</span>
                     <span className="date-month">
@@ -88,8 +115,12 @@ const EventsSection = ({ events, loading }) => {
                 </div>
                 <div className="premium-event-content">
                   <div className="event-status-badge">
-                    <span className={`status-indicator ${activeTab === "upcoming" ? "upcoming" : "ongoing"}`}></span>
-                    {activeTab === "upcoming" ? "Upcoming" : "Past"}
+                    <span
+                      className={`status-indicator ${
+                        activeTab === "upcoming" ? "upcoming" : activeTab === "ongoing" ? "ongoing" : "past"
+                      }`}
+                    ></span>
+                    {activeTab === "upcoming" ? "Upcoming" : activeTab === "ongoing" ? "Ongoing" : "Past"}
                   </div>
                   <h3>{event.name}</h3>
                   <div className="premium-event-meta">
