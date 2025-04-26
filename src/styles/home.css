@@ -36,6 +36,14 @@
   --font-body: "Poppins", sans-serif;
 }
 
+/* Add these rules near the top of the file, after the imports */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
 /* Global Styles */
 .premium-page {
   font-family: var(--font-body);
@@ -43,6 +51,9 @@
   line-height: 1.6;
   overflow-x: hidden;
   background-color: var(--white);
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
 }
 
 .premium-container {
@@ -51,6 +62,7 @@
   margin: 0 auto;
   padding: 0 20px;
   position: relative;
+  box-sizing: border-box;
 }
 
 button {
@@ -1674,5 +1686,29 @@ button {
 
   .footer-column h4 {
     font-size: 1.1rem;
+  }
+}
+
+/* Ensure all elements respect their container width */
+@media (max-width: 768px) {
+  .premium-hero-glass,
+  .premium-hero-content,
+  .premium-hero-text,
+  .premium-hero-description,
+  .premium-hero-buttons,
+  .premium-events-grid,
+  .premium-event-card,
+  .premium-event-content,
+  .premium-newsletter-wrapper,
+  .premium-newsletter-content,
+  .premium-footer-content {
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  .premium-hero-glass {
+    margin: 0;
+    border-radius: 0;
   }
 }
