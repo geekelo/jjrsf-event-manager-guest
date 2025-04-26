@@ -5,7 +5,8 @@ import GuestEventAccess from "./pages/eventAccess"
 import FrontDeskLogin from './pages/frontend'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Admit from "./pages/admit"import EventRegistration from "./pages/eventRegistration"
+import Admit from "./pages/admit"
+import EventRegistration from "./pages/eventRegistration"
 
 function App() {
   return (
