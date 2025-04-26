@@ -1,0 +1,39 @@
+.event-details {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .event-banner {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+  
+  .event-description {
+    margin: 15px 0;
+  }
+  
+  .event-actions {
+    margin-top: 20px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .register-btn {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .stream-btn {
+    background-color: #28a745;
+    color: white;
+  }
+  
