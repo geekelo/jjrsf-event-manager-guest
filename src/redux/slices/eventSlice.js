@@ -24,7 +24,7 @@ export const registerForEvent = createAsyncThunk(
   "events/registerForEvent",
   async ({ eventId, formData }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(`/api/v1/foundation_events/quick_registrations`, {event_id: (eventId), event_attendee:formData})
+      const res = await axiosInstance.post(`/api/v1/event_quick_registrations`, {event_id: (eventId), event_attendee:formData})
       return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to register for event")
