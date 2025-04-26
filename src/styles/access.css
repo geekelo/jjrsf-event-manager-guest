@@ -215,6 +215,27 @@
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(68, 39, 119, 0.1);
+  transition: all 0.3s ease;
+}
+
+.countdown-container.ongoing {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+}
+
+.countdown-container.completed {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(139, 195, 74, 0.1) 100%);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.countdown-container.ongoing .countdown {
+  color: #ff9800;
+  font-weight: 700;
+}
+
+.countdown-container.completed .countdown {
+  color: #4caf50;
+  font-weight: 700;
 }
 
 .countdown {
@@ -225,6 +246,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.countdown-container.ongoing .countdown svg {
+  color: #ff9800;
+}
+
+.countdown-container.completed .countdown svg {
+  color: #4caf50;
 }
 
 .countdown svg {

@@ -20,6 +20,7 @@ const GuestEventAccess = () => {
   const [input, setInput] = useState(["", "", "", "", ""])
   const [formError, setFormError] = useState("")
   const [countdown, setCountdown] = useState("")
+  const [eventStatus, setEventStatus] = useState("") // "upcoming", "ongoing", or "completed"
   const [showQuickRegistration, setShowQuickRegistration] = useState(false)
 
   useEffect(() => {
@@ -33,16 +34,29 @@ const GuestEventAccess = () => {
       const interval = setInterval(() => {
         const now = new Date()
         const start = new Date(event.start_date)
+        const end = new Date(event.end_date)
         const timeLeft = start - now
 
-        if (timeLeft <= 0) {
-          clearInterval(interval)
-          setCountdown("Event is live!")
+        // Determine event status
+        if (now < start) {
+          setEventStatus("upcoming")
+          // Calculate countdown for upcoming events
+          const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
+          const hrs = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+          const mins = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+          const secs = Math.floor((timeLeft % (1000 * 60)) / 1000)
+
+          if (days > 0) {
+            setCountdown(`${days}d ${hrs}h ${mins}m ${secs}s`)
+          } else {
+            setCountdown(`${hrs}h ${mins}m ${secs}s`)
+          }
+        } else if (now >= start && now <= end) {
+          setEventStatus("ongoing")
+          setCountdown("EVENT IS LIVE TODAY!")
         } else {
-          const hrs = Math.floor(timeLeft / 1000 / 60 / 60)
-          const mins = Math.floor((timeLeft / 1000 / 60) % 60)
-          const secs = Math.floor((timeLeft / 1000) % 60)
-          setCountdown(`${hrs}h ${mins}m ${secs}s`)
+          setEventStatus("completed")
+          setCountdown("REWATCH EVENT")
         }
       }, 1000)
 
@@ -97,7 +111,9 @@ const GuestEventAccess = () => {
   const isRegistrationClosed = new Date() > new Date(event.registration_deadline)
   const isEventPastOrOngoing = new Date() >= new Date(event.start_date)
   const showAttend =
-    new Date(event.start_date).toDateString() === new Date().toDateString() && (event.online || event.onsite)
+    new Date(event.start_date).toDateString() === new Date().toDateString() ||
+    eventStatus === "ongoing" ||
+    eventStatus === "completed"
 
   // Determine event type tag
   let eventTypeTag = ""
@@ -172,7 +188,7 @@ const GuestEventAccess = () => {
           </button>
         )}
 
-        <div className="countdown-container">
+        <div className={`countdown-container ${eventStatus}`}>
           <p className="countdown">
             <Clock size={24} />
             {countdown}
@@ -191,7 +207,13 @@ const GuestEventAccess = () => {
 
         {showAttend && (
           <div className="access-section">
-            <h3>Attend Online</h3>
+            <h3>
+              {eventStatus === "upcoming"
+                ? "Attend Online"
+                : eventStatus === "ongoing"
+                  ? "Join Live Now"
+                  : "Watch Recording"}
+            </h3>
             <label>{accessMode === "otp" ? "Enter 5-digit OTP" : "Enter your Email"}</label>
 
             {/* OTP Input as 5 separate boxes */}
@@ -250,7 +272,7 @@ const GuestEventAccess = () => {
 
             <button onClick={handleValidation} className="watch-btn">
               <Eye size={18} style={{ marginRight: "8px" }} />
-              Watch Event
+              {eventStatus === "upcoming" ? "Watch Event" : eventStatus === "ongoing" ? "Join Live" : "Watch Recording"}
             </button>
 
             <p onClick={toggleMode} className="toggle-mode">
