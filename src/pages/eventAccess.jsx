@@ -7,7 +7,7 @@ const GuestEventAccess = () => {
     const { unique_id } = useParams(); 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-  
+  console.log(unique_id)
     // Destructure state from useSelector
     const { singleEvent: event, loading, error } = useSelector((state) => state.events);
   
@@ -60,7 +60,7 @@ const GuestEventAccess = () => {
         console.log("Proceeding to event stream with:", input.join(""));
       }
     };
-  
+  console.log(event)
     if (loading) {
       return (
         <div className="event-loading">
@@ -82,8 +82,32 @@ const GuestEventAccess = () => {
     return (
       <div className="event-access-wrapper">
         <h1 className="event-title">{event.name}</h1>
+        {event.image_url && (
+        <img
+          src={event.image_url}
+          alt={event.name}
+          className="event-banner"
+        />
+      )}
         <p className="event-date">Date: {new Date(event.start_date).toDateString()}</p>
-  
+        <p className="event-description">{event.description}</p>
+
+<p className="event-location">
+        <strong>Location:</strong> {event.location}
+      </p>
+
+      <p className="event-type">
+        <strong>Type:</strong>{" "}
+        {event.online && event.onsite
+          ? "Hybrid"
+          : event.online
+          ? "Online"
+          : "Onsite"}
+      </p>
+
+      <p className="event-status">
+        <strong>Status:</strong> {event.status}
+        </p>
         {isRegistrationClosed ? (
           <p className="event-status closed">Registration Closed</p>
         ) : (
@@ -91,6 +115,7 @@ const GuestEventAccess = () => {
         )}
   
         <p className="countdown">⏳ {countdown}</p>
+        <p  onClick={() => navigate(`/event/frontdesk/${event.unique_id}`)} >feedback</p>
   
         {showAttend && (
           <div className="access-section">
