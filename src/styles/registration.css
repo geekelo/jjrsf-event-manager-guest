@@ -1,6 +1,15 @@
 /* Premium Registration Form Styles */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap");
 
+/* Add these rules at the top of the file, after the imports */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+ 
+}
+
 :root {
   --primary-color: #442777;
   --primary-light: #5f3d9c;
@@ -36,6 +45,7 @@
   --font-body: "Poppins", sans-serif;
 }
 
+/* Update the registration-wrapper to prevent overflow */
 .registration-wrapper {
   max-width: 800px;
   margin: 120px auto 60px;
@@ -43,6 +53,8 @@
   font-family: var(--font-body);
   color: var(--text-color);
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Decorative elements */
@@ -204,6 +216,9 @@
   border: 1px solid var(--border-color);
   box-shadow: var(--box-shadow-sm);
   transition: all 0.3s ease;
+  /* Ensure all form elements respect container width */
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .form-section:hover {
@@ -229,12 +244,18 @@
 .form-group {
   position: relative;
   margin-bottom: 20px;
+  /* Ensure all form elements respect container width */
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  /* Ensure all form elements respect container width */
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 label {
@@ -275,6 +296,9 @@ select {
   color: var(--text-color);
   background-color: var(--white);
   transition: var(--transition);
+  /* Ensure all form elements respect container width */
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 input[type="text"]:focus,
@@ -396,6 +420,9 @@ select {
   padding: 15px;
   border-radius: var(--border-radius);
   border-left: 3px solid var(--accent-color);
+  /* Ensure all form elements respect container width */
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .note-icon {
@@ -415,6 +442,9 @@ select {
   justify-content: space-between;
   margin-top: 20px;
   gap: 20px;
+  /* Ensure all form elements respect container width */
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .cancel-button,
@@ -432,6 +462,9 @@ select {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  /* Ensure all form elements respect container width */
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .cancel-button {
@@ -468,6 +501,9 @@ select {
   margin: 20px auto 0;
   display: inline-flex;
   box-shadow: 0 4px 15px rgba(68, 39, 119, 0.2);
+  /* Ensure all form elements respect container width */
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .back-button:hover {
@@ -908,6 +944,8 @@ select {
 
   .registration-card {
     padding: 20px 15px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .form-section {
@@ -985,6 +1023,29 @@ select {
   .watch-button {
     padding: 10px 15px;
     font-size: 0.9rem;
+  }
+
+  /* Fix form note display on small screens */
+  .form-note {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .note-icon {
+    margin-bottom: 8px;
+  }
+
+  /* Ensure proper padding on small screens */
+  .registration-card {
+    padding: 20px 15px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Fix any potential overflow from decorative elements */
+  .registration-wrapper::before,
+  .registration-wrapper::after {
+    display: none;
   }
 }
 
