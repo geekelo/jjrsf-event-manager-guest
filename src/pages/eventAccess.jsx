@@ -1,127 +1,221 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import "../styles/access.css";
-import { fetchSingleEvent } from "../redux/slices/eventSlice";
+"use client"
+
+import { useEffect, useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import "../styles/access.css"
+import { fetchSingleEvent } from "../redux/slices/eventSlice"
+import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users } from "lucide-react"
+import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
+
 const GuestEventAccess = () => {
-    const { unique_id } = useParams(); 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-  console.log(unique_id)
-    // Destructure state from useSelector
-    const { singleEvent: event, loading, error } = useSelector((state) => state.events);
-  
-    const [accessMode, setAccessMode] = useState("otp");
-    const [input, setInput] = useState(["", "", "", "", ""]);
-    const [formError, setFormError] = useState("");
-    const [countdown, setCountdown] = useState("");
-  
-    useEffect(() => {
-      if (unique_id) {
-        dispatch(fetchSingleEvent(unique_id)); 
-      }
-    }, [unique_id, dispatch]);
-  
-    useEffect(() => {
-      if (event) {
-        const interval = setInterval(() => {
-          const now = new Date();
-          const start = new Date(event.start_date);
-          const timeLeft = start - now;
-  
-          if (timeLeft <= 0) {
-            clearInterval(interval);
-            setCountdown("Event is live!");
+  const { unique_id } = useParams()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  // Destructure state from useSelector
+  const { singleEvent: event, loading, error } = useSelector((state) => state.events)
+
+  const [accessMode, setAccessMode] = useState("otp")
+  const [input, setInput] = useState(["", "", "", "", ""])
+  const [formError, setFormError] = useState("")
+  const [countdown, setCountdown] = useState("")
+  const [eventStatus, setEventStatus] = useState("") // "upcoming", "ongoing", or "completed"
+  const [showQuickRegistration, setShowQuickRegistration] = useState(false)
+
+  useEffect(() => {
+    if (unique_id) {
+      dispatch(fetchSingleEvent(unique_id))
+    }
+  }, [unique_id, dispatch])
+
+  useEffect(() => {
+    if (event) {
+      const interval = setInterval(() => {
+        const now = new Date()
+        const start = new Date(event.start_date)
+        const end = new Date(event.end_date)
+        const timeLeft = start - now
+
+        // Determine event status
+        if (now < start) {
+          setEventStatus("upcoming")
+          // Calculate countdown for upcoming events
+          const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
+          const hrs = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+          const mins = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+          const secs = Math.floor((timeLeft % (1000 * 60)) / 1000)
+
+          if (days > 0) {
+            setCountdown(`${days}d ${hrs}h ${mins}m ${secs}s`)
           } else {
-            const hrs = Math.floor(timeLeft / 1000 / 60 / 60);
-            const mins = Math.floor((timeLeft / 1000 / 60) % 60);
-            const secs = Math.floor((timeLeft / 1000) % 60);
-            setCountdown(`${hrs}h ${mins}m ${secs}s`);
+            setCountdown(`${hrs}h ${mins}m ${secs}s`)
           }
-        }, 1000);
-  
-        return () => clearInterval(interval);
-      }
-    }, [event]);
-  
-    const toggleMode = () => {
-      setAccessMode((prev) => (prev === "otp" ? "email" : "otp"));
-      setInput(["", "", "", "", ""]);
-      setFormError("");
-    };
-  
-    const handleValidation = () => {
-      if (accessMode === "otp" && input.join("").length !== 5) {
-        setFormError("Please enter a valid 5-digit OTP.");
-      } else if (accessMode === "email" && !/\S+@\S+\.\S+/.test(input.join(""))) {
-        setFormError("Please enter a valid email address.");
-      } else {
-        setFormError("");  
-        console.log("Proceeding to event stream with:", input.join(""));
-      }
-    };
-  console.log(event)
-    if (loading) {
-      return (
-        <div className="event-loading">
-          <div className="spinner" />
-          <p>Loading event...</p>
-        </div>
-      );
+        } else if (now >= start && now <= end) {
+          setEventStatus("ongoing")
+          setCountdown("EVENT IS LIVE TODAY!")
+        } else {
+          setEventStatus("completed")
+          setCountdown("REWATCH EVENT")
+        }
+      }, 1000)
+
+      return () => clearInterval(interval)
     }
-  
-    if (error || !event) {
-      return <div className="event-error">{error || "Event not found."}</div>;
+  }, [event])
+
+  const toggleMode = () => {
+    setAccessMode((prev) => (prev === "otp" ? "email" : "otp"))
+    setInput(["", "", "", "", ""])
+    setFormError("")
+  }
+
+  const handleValidation = () => {
+    if (accessMode === "otp" && input.join("").length !== 5) {
+      setFormError("Please enter a valid 5-digit OTP.")
+    } else if (accessMode === "email" && !/\S+@\S+\.\S+/.test(input.join(""))) {
+      setFormError("Please enter a valid email address.")
+    } else {
+      setFormError("")
+      console.log("Proceeding to event stream with:", input.join(""))
     }
-  
-    const isRegistrationClosed = new Date() > new Date(event.registration_deadline);
-    const showAttend =
-      new Date(event.start_date).toDateString() === new Date().toDateString() &&
-      (event.online || event.onsite);
-  
+  }
+
+  const handleQuickRegistration = () => {
+    setShowQuickRegistration(true)
+  }
+
+  const closeQuickRegistration = () => {
+    setShowQuickRegistration(false)
+  }
+
+  if (loading) {
     return (
-      <div className="event-access-wrapper">
-        <h1 className="event-title">{event.name}</h1>
+      <div className="event-loading">
+        <div className="spinner" />
+        <p>Loading event details...</p>
+      </div>
+    )
+  }
+
+  if (error || !event) {
+    return (
+      <div className="event-error">
+        <AlertCircle size={50} />
+        <h3>Event Not Found</h3>
+        <p>{error || "We couldn't find the event you're looking for."}</p>
+      </div>
+    )
+  }
+
+  const isRegistrationClosed = new Date() > new Date(event.registration_deadline)
+  const isEventPastOrOngoing = new Date() >= new Date(event.start_date)
+  const showAttend =
+    new Date(event.start_date).toDateString() === new Date().toDateString() ||
+    eventStatus === "ongoing" ||
+    eventStatus === "completed"
+
+  // Determine event type tag
+  let eventTypeTag = ""
+  if (event.online && event.onsite) {
+    eventTypeTag = "Hybrid (Online & Onsite)"
+  } else if (event.online) {
+    eventTypeTag = "Online"
+  } else if (event.onsite) {
+    eventTypeTag = "Onsite"
+  }
+
+  return (
+    <div className="event-access-wrapper">
+      <h1 className="event-title">{event.name}</h1>
+      <p className="event-date">
+        <CalendarDays size={18} />
+        {new Date(event.start_date).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </p>
+
+      <div className="event-card">
         {event.image_url && (
-        <img
-          src={event.image_url}
-          alt={event.name}
-          className="event-banner"
-        />
-      )}
-        <p className="event-date">Date: {new Date(event.start_date).toDateString()}</p>
-        <p className="event-description">{event.description}</p>
+          <div className="event-image-container">
+            <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
+          </div>
+        )}
 
-<p className="event-location">
-        <strong>Location:</strong> {event.location}
-      </p>
+        <div className="event-type-tag">
+          <Tag size={16} />
+          <span>{eventTypeTag}</span>
+        </div>
 
-      <p className="event-type">
-        <strong>Type:</strong>{" "}
-        {event.online && event.onsite
-          ? "Hybrid"
-          : event.online
-          ? "Online"
-          : "Onsite"}
-      </p>
+        <div className="event-details-section">
+          {event.description && (
+            <div className="event-description">
+              <h3>About This Event</h3>
+              <p>{event.description}</p>
+            </div>
+          )}
 
-      <p className="event-status">
-        <strong>Status:</strong> {event.status}
-        </p>
+          <div className="event-meta-info">
+            {event.location && (
+              <div className="meta-detail">
+                <MapPin size={18} />
+                <span>Location: {event.location}</span>
+              </div>
+            )}
+
+            <div className="meta-detail">
+              <Calendar size={18} />
+              <span>
+                Registration Deadline:{" "}
+                {new Date(event.registration_deadline).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </div>
+          </div>
+        </div>
+
         {isRegistrationClosed ? (
           <p className="event-status closed">Registration Closed</p>
         ) : (
-          <button className="register-btn">Register Now</button>
+          <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
+            Register Now
+          </button>
         )}
-  
-        <p className="countdown">⏳ {countdown}</p>
-        <p  onClick={() => navigate(`/event/frontdesk/${event.unique_id}`)} >feedback</p>
-  
+
+        <div className={`countdown-container ${eventStatus}`}>
+          <p className="countdown">
+            <Clock size={24} />
+            {countdown}
+          </p>
+        </div>
+
+        {isEventPastOrOngoing && (
+          <div className="quick-registration-section">
+            <button onClick={handleQuickRegistration} className="quick-register-btn">
+              <Users size={18} />
+              Quick Registration
+            </button>
+            <p className="quick-reg-note">Already at the event? Register quickly with minimal information.</p>
+          </div>
+        )}
+
         {showAttend && (
           <div className="access-section">
-            <h3>Attend Online</h3>
+            <h3>
+              {eventStatus === "upcoming"
+                ? "Attend Online"
+                : eventStatus === "ongoing"
+                  ? "Join Live Now"
+                  : "Watch Recording"}
+            </h3>
             <label>{accessMode === "otp" ? "Enter 5-digit OTP" : "Enter your Email"}</label>
-            
+
             {/* OTP Input as 5 separate boxes */}
             {accessMode === "otp" && (
               <div className="otp-input-container">
@@ -132,39 +226,75 @@ const GuestEventAccess = () => {
                     maxLength="1"
                     value={char}
                     onChange={(e) => {
-                      const newInput = [...input];
-                      newInput[idx] = e.target.value;
-                      setInput(newInput);
+                      const newInput = [...input]
+                      newInput[idx] = e.target.value
+                      setInput(newInput)
+
+                      // Auto-focus next input field after entry
+                      if (e.target.value && idx < 4) {
+                        const nextInput = e.target.nextElementSibling
+                        if (nextInput) {
+                          nextInput.focus()
+                        }
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      // Handle backspace to go to previous input
+                      if (e.key === "Backspace" && !char && idx > 0) {
+                        const prevInput = e.target.previousElementSibling
+                        if (prevInput) {
+                          prevInput.focus()
+                        }
+                      }
                     }}
                     className="otp-input"
                   />
                 ))}
               </div>
             )}
-  
+
             {accessMode === "email" && (
               <input
                 type="email"
                 value={input.join("")}
                 onChange={(e) => setInput([e.target.value])}
                 className="access-input"
+                placeholder="Enter your email address"
               />
             )}
-  
-            {formError && <p className="error-msg">{formError}</p>}
+
+            {formError && (
+              <p className="error-msg">
+                <AlertCircle size={16} style={{ marginRight: "8px" }} />
+                {formError}
+              </p>
+            )}
+
             <button onClick={handleValidation} className="watch-btn">
-              Watch
+              <Eye size={18} style={{ marginRight: "8px" }} />
+              {eventStatus === "upcoming" ? "Watch Event" : eventStatus === "ongoing" ? "Join Live" : "Watch Recording"}
             </button>
+
             <p onClick={toggleMode} className="toggle-mode">
-              {accessMode === "otp"
-                ? "Forgot your OTP? Use email instead"
-                : "Use 5-digit OTP instead"}
+              {accessMode === "otp" ? (
+                <>
+                  <Mail size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+                  Forgot your OTP? Use email instead
+                </>
+              ) : (
+                <>
+                  <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+                  Use 5-digit OTP instead
+                </>
+              )}
             </p>
           </div>
         )}
       </div>
-    );
-  };
-  
-  export default GuestEventAccess;
-  
+
+      {showQuickRegistration && event && <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />}
+    </div>
+  )
+}
+
+export default GuestEventAccess

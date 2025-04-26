@@ -5,7 +5,7 @@ import GuestEventAccess from "./pages/eventAccess"
 import FrontDeskLogin from './pages/frontend'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Admit from "./pages/admit"
+import Admit from "./pages/admit"import EventRegistration from "./pages/eventRegistration"
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
         <Route path="/event/frontdesk/:unique_id" element={ <FrontDeskLogin />} />
         <Route path="/event/frontdesk/:unique_id/admit" element={ <Admit />} />
 
+        <Route path="/event/:unique_id/register" element={<EventRegistration />} />
       </Routes>
     
       
