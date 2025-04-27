@@ -83,11 +83,7 @@ const GuestNavbar = () => {
                 Contact
               </a>
             </li>
-            <li>
-              <Link to="/admin/login" className="premium-login-btn" onClick={() => setIsOpen(false)}>
-                Login
-              </Link>
-            </li>
+           
           </ul>
         </nav>
       </div>
