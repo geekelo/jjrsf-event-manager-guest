@@ -162,13 +162,14 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
           </div>
 
           <div className="quick-reg-field">
-            <label htmlFor="email">Email (Optional)</label>
+            <label htmlFor="email">Email </label>
             <div className="input-wrapper">
               <Mail size={16} className="input-icon" />
               <input
                 type="email"
                 id="email"
                 name="email"
+                required
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email address"
@@ -179,7 +180,7 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
           </div>
 
           <div className="quick-reg-field">
-            <label htmlFor="phone">Phone (Optional)</label>
+            <label htmlFor="phone">Phone </label>
             <div className="input-wrapper">
               <Phone size={16} className="input-icon" />
               <input
