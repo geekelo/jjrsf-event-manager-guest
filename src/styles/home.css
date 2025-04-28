@@ -336,7 +336,6 @@ button {
     text-align: center;
   }
 }
-
 /* Hero Section */
 .premium-hero-section {
   min-height: 100vh;
@@ -345,14 +344,7 @@ button {
   overflow: hidden;
   display: flex;
   align-items: center;
-  padding: 80px 0 60px;
-}
-
-/* Remove padding for laptop screens only */
-@media (min-width: 992px) and (max-width: 1366px) {
-  .premium-hero-section {
-    padding: 60px 0 40px;
-  }
+  padding: 120px 0 80px;
 }
 
 .hero-shape {
@@ -390,7 +382,7 @@ button {
   border-radius: var(--border-radius-lg);
   box-shadow: var(--glassmorphism-shadow);
   margin: 0 20px;
-  padding: 60px 0;
+  padding: 80px 0;
 }
 
 .premium-hero-content {
@@ -579,7 +571,6 @@ button {
   letter-spacing: 1px;
   opacity: 0.7;
 }
-
 /* Events Section */
 .premium-events-section {
   padding: 100px 0;
@@ -1433,282 +1424,133 @@ button {
 @media (max-width: 576px) {
   .premium-hero-glass {
     padding: 20px 10px;
-    margin: 0 10px;
-  }
-
-  .premium-hero-text h1 {
-    font-size: 2.2rem;
-  }
-
-  .premium-section-header h2 {
-    font-size: 1.8rem;
-  }
-
-  .premium-featured-event-content {
-    padding: 20px;
-  }
-
-  .premium-featured-event-content h3 {
-    font-size: 1.5rem;
-  }
-
-  .event-date-badge {
-    width: 50px;
-    height: 50px;
-  }
-
-  .date-day {
-    font-size: 1.2rem;
-  }
-
-  .premium-cta-button,
-  .premium-secondary-button {
-    padding: 12px 20px;
-    font-size: 0.9rem;
-    width: 100%;
+    margin: 0;
+    border-radius: 0;
   }
 
   .premium-hero-buttons {
     width: 100%;
   }
-
-  .premium-newsletter-wrapper {
-    padding: 30px 15px;
-  }
-
-  .newsletter-header h2 {
-    font-size: 1.8rem;
-  }
-
-  .premium-contact-button {
-    padding: 12px 20px;
-    font-size: 0.9rem;
-    width: 100%;
-  }
-
-  .premium-faq-question h3 {
-    font-size: 1rem;
-  }
-
-  .premium-faq-item {
-    padding: 15px 20px;
-  }
 }
 
-/* Update the hero section padding for mobile */
+/* Enhanced mobile responsiveness for hero section */
 @media (max-width: 768px) {
   .premium-hero-section {
-    padding: 60px 0 40px; /* Reduced padding top from 100px to 60px */
+    min-height: auto;
+    padding: 60px 0 40px;
   }
 
   .premium-hero-glass {
     padding: 30px 15px;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .premium-hero-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .premium-hero-text {
+    margin-bottom: 50px;
+    max-width: 100%;
   }
 
   .premium-hero-text h1 {
-    font-size: 2.5rem; /* Smaller font size for mobile */
+    font-size: 2.5rem;
   }
 
   .premium-hero-description {
     font-size: 0.95rem;
+    max-width: 100%;
   }
 
   .premium-hero-buttons {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    gap: 10px; /* Reduced gap for mobile */
+    gap: 10px;
   }
 
   .premium-cta-button,
   .premium-secondary-button {
     width: 100%;
     padding: 12px 20px;
+    justify-content: center;
   }
 
-  /* Improve events section for mobile */
-  .premium-events-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .premium-event-card {
+  /* Fix for rotating circles */
+  .premium-hero-image {
     max-width: 100%;
   }
 
-  .premium-event-image {
-    height: 180px; /* Slightly smaller image height for mobile */
-  }
-
-  /* Improve FAQs section for mobile */
-  .premium-faq-item {
-    padding: 15px;
-  }
-
-  .premium-faq-question h3 {
-    font-size: 1rem;
-  }
-
-  /* Improve about section for mobile */
-  .premium-about-wrapper {
-    gap: 30px;
-  }
-
-  .about-image-container {
+  .rotating-circles {
+    width: 250px;
     height: 250px;
   }
 
-  /* Improve newsletter section for mobile */
-  .premium-newsletter-wrapper {
-    padding: 30px 15px;
+  .circle {
+    border-width: 1px;
   }
 
-  .newsletter-header h2 {
-    font-size: 1.8rem;
+  /* Fix for hero stats */
+  .hero-stats {
+    position: relative;
+    bottom: 0;
+    margin-top: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
   }
 
-  /* Improve footer for mobile */
-  .premium-footer-content {
-    gap: 30px;
+  .stat-item {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 15px;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
   }
 }
 
-/* Add even smaller screen adjustments */
+/* Extra small screen adjustments */
 @media (max-width: 480px) {
+  .premium-hero-section {
+    padding: 50px 0 30px;
+  }
+
   .premium-hero-text h1 {
     font-size: 2rem;
   }
 
-  .premium-section-header h2 {
-    font-size: 1.6rem;
+  .rotating-circles {
+    width: 200px;
+    height: 200px;
   }
 
-  .premium-events-tabs {
-    flex-direction: column;
-    gap: 10px;
+  .circle1, .circle2, .circle3 {
+    border-width: 1px;
   }
 
-  .premium-tab-button {
-    width: 100%;
-    justify-content: center;
-    padding: 12px;
+  .hero-stats {
+    gap: 8px;
   }
 
-  .event-date-badge {
-    width: 45px;
-    height: 45px;
+  .stat-item {
+    min-width: 70px;
+    padding: 8px 10px;
   }
 
-  .date-day {
-    font-size: 1.1rem;
-  }
-}
-
-/* Add styles for the event placeholder icon */
-.event-placeholder-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  background-color: var(--light-purple);
-  color: var(--primary-color);
-  opacity: 0.7;
-}
-
-/* Improve mobile responsiveness for the header */
-@media (max-width: 768px) {
-  .premium-header {
-    padding: 10px 0;
-  }
-
-  .premium-header.scrolled {
-    padding: 8px 0;
-  }
-
-  .premium-logo {
-    height: 35px;
-  }
-
-  .premium-logo-text h1 {
-    font-size: 1.5rem;
-  }
-
-  .premium-logo-tagline {
-    font-size: 0.7rem;
-  }
-}
-
-/* Improve mobile responsiveness for the FAQs section */
-@media (max-width: 768px) {
-  .premium-faqs-section {
-    padding: 60px 0;
-  }
-
-  .premium-faq-item {
-    padding: 20px;
-  }
-
-  .premium-faq-question h3 {
-    font-size: 1rem;
-    line-height: 1.4;
-  }
-}
-
-/* Improve mobile responsiveness for the newsletter section */
-@media (max-width: 768px) {
-  .premium-newsletter-section {
-    padding: 60px 0;
-  }
-
-  .premium-contact-button {
-    width: 100%;
-    justify-content: center;
-    font-size: 0.95rem;
-    padding: 12px 20px;
-  }
-}
-
-/* Improve mobile responsiveness for the footer */
-@media (max-width: 768px) {
-  .premium-footer {
-    padding: 60px 0 20px;
-  }
-
-  .premium-footer-logo h3 {
+  .stat-number {
     font-size: 1.3rem;
   }
 
-  .premium-social-icon {
-    width: 35px;
-    height: 35px;
-  }
-
-  .footer-column h4 {
-    font-size: 1.1rem;
-  }
-}
-
-/* Ensure all elements respect their container width */
-@media (max-width: 768px) {
-  .premium-hero-glass,
-  .premium-hero-content,
-  .premium-hero-text,
-  .premium-hero-description,
-  .premium-hero-buttons,
-  .premium-events-grid,
-  .premium-event-card,
-  .premium-event-content,
-  .premium-newsletter-wrapper,
-  .premium-newsletter-content,
-  .premium-footer-content {
-    width: 100%;
-    box-sizing: border-box;
-    max-width: 100%;
-  }
-
-  .premium-hero-glass {
-    margin: 0;
-    border-radius: 0;
+  .stat-label {
+    font-size: 0.7rem;
   }
 }

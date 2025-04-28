@@ -103,6 +103,10 @@ const FooterSection = () => {
                   <span>info@jjrsfoundation.org</span>
                 </li>
                 <li>
+                  <Mail size={16} />
+                  <span>jjrsfoundation@gmail.com</span>
+                </li>
+                <li>
                   <Phone size={16} />
                   <span>(+234) 809 914 5730
                   </span>
