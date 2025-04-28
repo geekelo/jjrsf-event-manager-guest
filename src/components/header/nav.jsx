@@ -83,7 +83,6 @@ const GuestNavbar = () => {
                 Contact
               </a>
             </li>
-
           </ul>
         </nav>
       </div>
