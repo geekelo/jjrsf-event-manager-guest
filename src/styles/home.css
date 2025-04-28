@@ -329,6 +329,7 @@ button {
     padding: 15px 0;
     width: 100%;
     font-size: 1.1rem;
+    font-family: var(--font-body);
   }
 
   .premium-login-btn {
