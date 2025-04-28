@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import "../styles/access.css"
 import { fetchSingleEvent } from "../redux/slices/eventSlice"
+import { markAttendee } from "../redux/slices/attendeeSlice"
 import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users } from "lucide-react"
 import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
 
@@ -15,6 +16,9 @@ const GuestEventAccess = () => {
 
   // Destructure state from useSelector
   const { singleEvent: event, loading, error } = useSelector((state) => state.events)
+
+  // Add new state from attendee reducer
+  const { loading: attendeeLoading, error: attendeeError, success: attendeeSuccess } = useSelector((state) => state.attendee)
 
   const [accessMode, setAccessMode] = useState("otp")
   const [input, setInput] = useState(["", "", "", "", "", ""]) // Updated to 6 digits
@@ -64,6 +68,14 @@ const GuestEventAccess = () => {
     }
   }, [event])
 
+  // Update when attendance marking is successful
+  useEffect(() => {
+    if (attendeeSuccess) {
+      // Navigate to stream view page with event ID
+      navigate(`/stream/${unique_id}`)
+    }
+  }, [attendeeSuccess, navigate, unique_id])
+
   const toggleMode = () => {
     setAccessMode((prev) => (prev === "otp" ? "email" : "otp"))
     setInput(accessMode === "otp" ? [""] : ["", "", "", "", "", ""])
@@ -80,11 +92,21 @@ const GuestEventAccess = () => {
 
       // Convert OTP to lowercase before sending
       const accessValue = accessMode === "otp" ? input.join("").toLowerCase() : input.join("")
-
-      console.log("Proceeding to event stream with:", accessValue)
-
-      // Navigate to stream view page with event ID
-      navigate(`/stream/${unique_id}`)
+      
+      // Create payload based on access mode
+      const payload = {
+        event_id: event.id,
+        mode: "online"
+      }
+      
+      if (accessMode === "otp") {
+        payload.otp = accessValue
+      } else {
+        payload.email = accessValue
+      }
+      
+      // Dispatch the markAttendee action
+      dispatch(markAttendee(payload))
     }
   }
 
@@ -277,9 +299,19 @@ const GuestEventAccess = () => {
               </p>
             )}
 
-            <button onClick={handleValidation} className="watch-btn">
-              <Eye size={18} style={{ marginRight: "8px" }} />
-              {eventStatus === "upcoming" ? "Watch Event" : eventStatus === "ongoing" ? "Join Live" : "Watch Recording"}
+            <button 
+              onClick={handleValidation} 
+              className="watch-btn"
+              disabled={attendeeLoading}
+            >
+              {attendeeLoading ? (
+                <span>Processing...</span>
+              ) : (
+                <>
+                  <Eye size={18} style={{ marginRight: "8px" }} />
+                  {eventStatus === "upcoming" ? "Watch Event" : eventStatus === "ongoing" ? "Join Live" : "Watch Recording"}
+                </>
+              )}
             </button>
 
             <p onClick={toggleMode} className="toggle-mode">
