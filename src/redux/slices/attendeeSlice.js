@@ -27,7 +27,8 @@ const attendeeSlice = createSlice({
   initialState: {
     loading: false,
     error: null,
-    success: false
+    success: false,
+    attendeeData: null
   },
   reducers: {
     resetAttendanceStatus: (state) => {
@@ -42,10 +43,12 @@ const attendeeSlice = createSlice({
         state.loading = true
         state.error = null
         state.success = false
+        state.attendeeData = null
       })
-      .addCase(markAttendee.fulfilled, (state) => {
+      .addCase(markAttendee.fulfilled, (state, action) => {
         state.loading = false
         state.success = true
+        state.attendeeData = action.payload
       })
       .addCase(markAttendee.rejected, (state, action) => {
         state.loading = false

@@ -5,8 +5,8 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import "../styles/access.css"
 import { fetchSingleEvent } from "../redux/slices/eventSlice"
-import { markAttendee } from "../redux/slices/attendeeSlice"
-import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users } from "lucide-react"
+import { markAttendee, resetAttendanceStatus } from "../redux/slices/attendeeSlice"
+import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users, X, CheckCircle } from "lucide-react"
 import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
 
 const Admit = () => {
@@ -17,7 +17,7 @@ const Admit = () => {
   // Destructure state from useSelector
   const { singleEvent: event, loading, error } = useSelector((state) => state.events)
   // Add attendee state from reducer
-  const { loading: attendeeLoading, error: attendeeError, success: attendeeSuccess } = useSelector((state) => state.attendee)
+  const { loading: attendeeLoading, error: attendeeError, success: attendeeSuccess, attendeeData } = useSelector((state) => state.attendee)
 
   const [accessMode, setAccessMode] = useState("otp")
   const [input, setInput] = useState(["", "", "", "", "", ""]) // Updated to 6 digits
@@ -25,6 +25,7 @@ const Admit = () => {
   const [countdown, setCountdown] = useState("")
   const [eventStatus, setEventStatus] = useState("") // "upcoming", "ongoing", or "completed"
   const [showQuickRegistration, setShowQuickRegistration] = useState(false)
+  const [showResultModal, setShowResultModal] = useState(false)
 
   useEffect(() => {
     if (unique_id) {
@@ -32,13 +33,12 @@ const Admit = () => {
     }
   }, [unique_id, dispatch])
 
-  // Update when attendance marking is successful
+  // Update when attendance marking is successful or has error
   useEffect(() => {
-    if (attendeeSuccess) {
-      // Navigate to stream view page with event ID
-      navigate(`/stream/${unique_id}`)
+    if (attendeeSuccess || attendeeError) {
+      setShowResultModal(true)
     }
-  }, [attendeeSuccess, navigate, unique_id])
+  }, [attendeeSuccess, attendeeError])
 
   useEffect(() => {
     if (event) {
@@ -115,6 +115,14 @@ const Admit = () => {
 
   const closeQuickRegistration = () => {
     setShowQuickRegistration(false)
+  }
+
+  const closeResultModal = () => {
+    setShowResultModal(false)
+    // Reset the attendance status in Redux
+    dispatch(resetAttendanceStatus())
+    // Clear input fields after closing modal
+    setInput(accessMode === "otp" ? ["", "", "", "", "", ""] : [""])
   }
 
   if (loading) {
@@ -297,13 +305,6 @@ const Admit = () => {
               </p>
             )}
 
-            {attendeeError && (
-              <p className="error-msg">
-                <AlertCircle size={16} style={{ marginRight: "8px" }} />
-                {attendeeError}
-              </p>
-            )}
-
             <button 
               onClick={handleValidation} 
               className="watch-btn"
@@ -314,7 +315,7 @@ const Admit = () => {
               ) : (
                 <>
                   <Eye size={18} style={{ marginRight: "8px" }} />
-                  {eventStatus === "upcoming" ? "Watch Event" : eventStatus === "ongoing" ? "Join Live" : "Watch Recording"}
+                  {eventStatus === "upcoming" ? "Admit Guest" : eventStatus === "ongoing" ? "Admit Guest" : "Admit Guest"}
                 </>
               )}
             </button>
@@ -335,6 +336,50 @@ const Admit = () => {
           </div>
         )}
       </div>
+
+      {/* Success/Error Modal */}
+      {showResultModal && (
+        <div className="result-modal-overlay">
+          <div className={`result-modal ${attendeeSuccess ? 'success' : 'error'}`}>
+            <button className="close-modal" onClick={closeResultModal}>
+              <X size={24} />
+            </button>
+            
+            <div className="modal-icon">
+              {attendeeSuccess ? (
+                <CheckCircle size={50} color="#4CAF50" />
+              ) : (
+                <AlertCircle size={50} color="#F44336" />
+              )}
+            </div>
+            
+            <h3 className="modal-title">
+              {attendeeSuccess ? "Success" : "Error"}
+            </h3>
+            
+            <p className="modal-message">
+              {attendeeSuccess 
+                ? `${attendeeData?.attendee?.name || 'Guest'} has been successfully marked as attended. Kindly admit and grant access.`
+                : `The OTP or Email entered was unrecognized. Please retry or Quick Register the guest to receive an OTP.`
+              }
+            </p>
+            
+            {!attendeeSuccess && (
+              <button className="quick-register-modal-btn" onClick={() => {
+                closeResultModal();
+                handleQuickRegistration();
+              }}>
+                <Users size={18} style={{ marginRight: "8px" }} />
+                Quick Register Guest
+              </button>
+            )}
+            
+            <button className="close-modal-btn" onClick={closeResultModal}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {showQuickRegistration && event && <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />}
     </div>
