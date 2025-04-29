@@ -1,22 +1,11 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import {
-  ArrowLeft,
-  FilmIcon,
-  ChevronDown,
-  ChevronUp,
-  Globe,
-  Youtube,
-  Mic,
-  Video,
-  Copy,
-  Check,
-  Code,
-} from "lucide-react"
+import { FilmIcon, ChevronDown, ChevronUp, Globe, Youtube, Mic, Video, Copy, Check, Code } from "lucide-react"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchSingleEvent } from "../redux/slices/eventSlice"
 import "../styles/streamView.css"
+import FloatingFeedbackButton from "../components/forms/FloatingFeadbackButton"
 
 function StreamView() {
   const navigate = useNavigate()
@@ -226,7 +215,6 @@ function StreamView() {
     <div className="manage-stream-page">
       <div className="stream-container">
         <div className="stream-header">
-          
           <h2>
             <FilmIcon size={24} />
             {event.name} - Live Stream
@@ -281,6 +269,9 @@ function StreamView() {
           </div>
         </div>
       </div>
+
+      {/* Add the floating feedback button */}
+      {event && <FloatingFeedbackButton eventId={event.id} />}
     </div>
   )
 }
