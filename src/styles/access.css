@@ -195,7 +195,7 @@
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
-  border-radius: 30px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
   box-shadow: 0 8px 30px rgba(68, 39, 119, 0.2);
@@ -609,6 +609,7 @@
 
 .otp-input-container {
   display: flex;
+
   justify-content: center;
   gap: 12px;
   margin: 20px 0;
@@ -834,5 +835,139 @@
 
   .quick-registration-form form {
     padding: 15px;
+  }
+}
+
+/* Modal Styles */
+.result-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.result-modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-modal.success {
+  border-top: 5px solid #4CAF50;
+}
+
+.result-modal.error {
+  border-top: 5px solid #F44336;
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+.modal-icon {
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.modal-message {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.quick-register-modal-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  transition: background-color 0.2s;
+}
+
+.quick-register-modal-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.close-modal-btn {
+  background: linear-gradient(135deg, #442777 0%, #5f3d9c 100%);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 8px 30px rgba(68, 39, 119, 0.2);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+.close-modal-btn:hover {
+  background-color: #442777;
+}
+
+@media (max-width: 405px) {
+  .otp-input-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    max-width: 80%;
+    margin: 20px auto;
+  }
+  
+  .otp-input {
+    width: 100%;
+    height: 45px;
+    font-size: 1.1rem;
   }
 }

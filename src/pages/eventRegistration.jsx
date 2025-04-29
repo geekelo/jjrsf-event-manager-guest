@@ -239,7 +239,7 @@ const EventRegistration = () => {
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
-                      placeholder="Enter your address (optional)"
+                      placeholder="Enter your address "
                     />
                   </div>
                 </div>
@@ -252,9 +252,10 @@ const EventRegistration = () => {
                       type="email"
                       id="email"
                       name="email"
+                      required
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="Enter your email (optional)"
+                      placeholder="Enter your email "
                       className={validationErrors.email ? "error" : ""}
                     />
                   </div>
@@ -279,7 +280,7 @@ const EventRegistration = () => {
                         name="whatsapp"
                         value={formData.whatsapp}
                         onChange={handleChange}
-                        placeholder="WhatsApp number (optional)"
+                        placeholder="WhatsApp number "
                       />
                     </div>
                   </div>
@@ -294,7 +295,7 @@ const EventRegistration = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="Phone number (optional)"
+                        placeholder="Phone number"
                       />
                     </div>
                   </div>

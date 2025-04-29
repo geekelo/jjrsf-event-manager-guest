@@ -26,17 +26,7 @@ const FAQsSection = () => {
       question: "How can I access event materials after attending?",
       answer:
         "Event materials such as presentations, recordings, and additional resources are typically made available to registered attendees through our portal. You'll receive access instructions via email after the event.",
-    },
-    {
-      question: "What is the cancellation policy?",
-      answer:
-        "Our standard cancellation policy allows for full refunds up to 7 days before the event. Between 7 days and 48 hours, a 50% refund is available. No refunds are provided for cancellations less than 48 hours before the event. Please check specific event details as policies may vary.",
-    },
-    {
-      question: "How can I become a speaker at your events?",
-      answer:
-        "We're always looking for knowledgeable speakers to share insights at our events. Please contact us at speakers@jjrsfoundation.org with your area of expertise and speaking experience, and our team will get back to you.",
-    },
+    }
   ]
 
   return (
