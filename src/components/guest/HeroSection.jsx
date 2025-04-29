@@ -100,10 +100,10 @@ const HeroSection = () => {
             <h1>
               <span className="accent-text">JJRSF</span> 
               <br />
-              PROGRAMS MANAGER
+              PROGRAMS PORTAL
             </h1>
             <p className="premium-hero-description">
-            JJRSF Programs Manager is a comprehensive platform designed to streamline the registration, follow-up, and admitting guests, sharing reviews, managing guests, and planning events/programs. It empowers organizers with tools to manage attendees, track registrations, monitor attendance (online and offline), send automated notifications, and generate insightful reports.
+            Find and register for upcoming events, stream ongoing events, and watch recordings of past events.
             </p>
             <div className="premium-hero-buttons">
               <a href="#events" className="premium-cta-button">
