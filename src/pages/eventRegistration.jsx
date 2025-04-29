@@ -355,7 +355,7 @@ const EventRegistration = () => {
                 <div className="form-group checkbox-group">
                   <label className="checkbox-container">
                     <input type="checkbox" name="member" checked={formData.member} onChange={handleChange} />
-                    <span className="checkmark"></span>I am a member of JJRSF Foundation
+                    <span className="checkmark"></span>I am a member of JJRS Foundation
                   </label>
                 </div>
               </div>

@@ -122,7 +122,7 @@ const FooterSection = () => {
         </div>
 
         <div className="premium-footer-bottom">
-          <p>&copy; {new Date().getFullYear()} JJRSF Foundation. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} JJRS Foundation. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
