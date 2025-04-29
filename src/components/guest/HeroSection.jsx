@@ -98,7 +98,7 @@ const HeroSection = () => {
           <div className="premium-hero-text">
             <span className="hero-kicker">Welcome to</span>
             <h1>
-              <span className="accent-text">JJRSF</span> 
+              <span className="accent-text">JJRSF Foundation</span> 
               <br />
               Program Portal
             </h1>
