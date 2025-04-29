@@ -1,4 +1,5 @@
-/* Feedback Form Styles */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap");
+
 .floating-feedback-button {
     position: fixed;
     bottom: 30px;
@@ -87,7 +88,7 @@
   }
   
   .feedback-form-title {
-    font-family: "Playfair Display", serif;
+    font-family: "Poppins", sans-serif;
     font-size: 1.5rem;
     color: #442777;
     margin-bottom: 20px;
