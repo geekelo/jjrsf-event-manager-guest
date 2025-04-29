@@ -35,7 +35,7 @@ const GuestEventsPage = () => {
             <div className="premium-about-content">
               <div className="premium-section-header left-aligned">
                 <span className="section-kicker">Our Story</span>
-                <h2>About JJRSF Foundation</h2>
+                <h2>About JJRS Foundation</h2>
               </div>
               <div className="section-decorator left-aligned">
                 <span></span>

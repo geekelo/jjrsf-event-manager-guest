@@ -98,13 +98,12 @@ const HeroSection = () => {
           <div className="premium-hero-text">
             <span className="hero-kicker">Welcome to</span>
             <h1>
-              <span className="accent-text">JJRSF</span> Foundation
+              <span className="accent-text">JJRS Foundation</span> 
               <br />
               Program Portal
             </h1>
             <p className="premium-hero-description">
-              Discover transformative events designed to foster community, learning, and personal growth. Join us on a
-              journey of connection and development.
+            Find and register for upcoming events, stream ongoing events, and watch recordings of past events.
             </p>
             <div className="premium-hero-buttons">
               <a href="#events" className="premium-cta-button">

@@ -9,7 +9,7 @@ const FooterSection = () => {
         <div className="premium-footer-content">
           <div className="premium-footer-logo">
             <img src="/jjrsf-logo.png" alt="JJRSF Logo" className="footer-logo" />
-            <h3>JJRSF Foundation</h3>
+            <h3>JJRS Foundation</h3>
             <p>We aim at lifting believers out of the pit of religion and self effort in order for all to be saved and come to the knowledge of the truth.</p>
             <div className="premium-social-icons">
               <a
@@ -122,7 +122,7 @@ const FooterSection = () => {
         </div>
 
         <div className="premium-footer-bottom">
-          <p>&copy; {new Date().getFullYear()} JJRSF Foundation. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} JJRS Foundation. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
