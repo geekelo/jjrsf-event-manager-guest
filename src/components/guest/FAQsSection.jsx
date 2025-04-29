@@ -30,16 +30,6 @@ const FAQsSection = () => {
       answer:
         "You can share your testimony or feedback by clicking on the 'Give Feedback' button that appears on the event page or stream view. This button is located at the bottom right corner of the screen. You can provide your name (optional), write a review, or share a testimony about how the event impacted you. Your feedback is valuable to us and helps improve future events.",
     },
-    {
-      question: "What is the cancellation policy?",
-      answer:
-        "Our standard cancellation policy allows for full refunds up to 7 days before the event. Between 7 days and 48 hours, a 50% refund is available. No refunds are provided for cancellations less than 48 hours before the event. Please check specific event details as policies may vary.",
-    },
-    {
-      question: "How can I become a speaker at your events?",
-      answer:
-        "We're always looking for knowledgeable speakers to share insights at our events. Please contact us at speakers@jjrsfoundation.org with your area of expertise and speaking experience, and our team will get back to you.",
-    },
   ]
 
   return (
