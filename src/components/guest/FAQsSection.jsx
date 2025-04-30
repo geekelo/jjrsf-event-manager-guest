@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { User, ChevronDown } from "lucide-react"
 
@@ -26,7 +24,12 @@ const FAQsSection = () => {
       question: "How can I access event materials after attending?",
       answer:
         "Event materials such as presentations, recordings, and additional resources are typically made available to registered attendees through our portal. You'll receive access instructions via email after the event.",
-    }
+    },
+    {
+      question: "How can I share my testimony or feedback about an event?",
+      answer:
+        "You can share your testimony or feedback by clicking on the 'Give Feedback' button that appears on the event page or stream view. This button is located at the bottom right corner of the screen. You can provide your name (optional), write a review, or share a testimony about how the event impacted you. Your feedback is valuable to us and helps improve future events.",
+    },
   ]
 
   return (

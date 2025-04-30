@@ -8,6 +8,7 @@ import { fetchSingleEvent } from "../redux/slices/eventSlice"
 import { markAttendee } from "../redux/slices/attendeeSlice"
 import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users } from "lucide-react"
 import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
+import FloatingFeedbackButton from "../components/forms/FloatingFeadbackButton"
 
 const GuestEventAccess = () => {
   const { unique_id } = useParams()
@@ -18,7 +19,11 @@ const GuestEventAccess = () => {
   const { singleEvent: event, loading, error } = useSelector((state) => state.events)
 
   // Add new state from attendee reducer
-  const { loading: attendeeLoading, error: attendeeError, success: attendeeSuccess } = useSelector((state) => state.attendee)
+  const {
+    loading: attendeeLoading,
+    error: attendeeError,
+    success: attendeeSuccess,
+  } = useSelector((state) => state.attendee)
 
   const [accessMode, setAccessMode] = useState("otp")
   const [input, setInput] = useState(["", "", "", "", "", ""]) // Updated to 6 digits
@@ -92,19 +97,19 @@ const GuestEventAccess = () => {
 
       // Convert OTP to lowercase before sending
       const accessValue = accessMode === "otp" ? input.join("").toLowerCase() : input.join("")
-      
+
       // Create payload based on access mode
       const payload = {
         event_id: event.id,
-        mode: "online"
+        mode: "online",
       }
-      
+
       if (accessMode === "otp") {
         payload.otp = accessValue
       } else {
         payload.email = accessValue
       }
-      
+
       // Dispatch the markAttendee action
       dispatch(markAttendee(payload))
     }
@@ -299,17 +304,17 @@ const GuestEventAccess = () => {
               </p>
             )}
 
-            <button 
-              onClick={handleValidation} 
-              className="watch-btn"
-              disabled={attendeeLoading}
-            >
+            <button onClick={handleValidation} className="watch-btn" disabled={attendeeLoading}>
               {attendeeLoading ? (
                 <span>Processing...</span>
               ) : (
                 <>
                   <Eye size={18} style={{ marginRight: "8px" }} />
-                  {eventStatus === "upcoming" ? "Watch Event" : eventStatus === "ongoing" ? "Join Live" : "Watch Recording"}
+                  {eventStatus === "upcoming"
+                    ? "Watch Event"
+                    : eventStatus === "ongoing"
+                      ? "Join Live"
+                      : "Watch Recording"}
                 </>
               )}
             </button>
@@ -332,6 +337,9 @@ const GuestEventAccess = () => {
       </div>
 
       {showQuickRegistration && event && <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />}
+
+      {/* Add the floating feedback button */}
+      {event && <FloatingFeedbackButton eventId={event.id} />}
     </div>
   )
 }
