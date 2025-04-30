@@ -111,7 +111,8 @@
     margin-bottom: 5px;
   }
   
-  .feedback-input,
+  
+ .feedback-form-group .feedback-input,
   .feedback-textarea {
     width: 100%;
     padding: 12px 15px;
