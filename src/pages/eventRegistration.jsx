@@ -22,7 +22,6 @@ const EventRegistration = () => {
     registrationError,
     registrationSuccess,
   } = useSelector((state) => state.events)
-
   // Form state
   const [formData, setFormData] = useState({
     name: "",
