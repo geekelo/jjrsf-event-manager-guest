@@ -30,10 +30,18 @@ export const registerForEvent = createAsyncThunk(
       })
       return res.data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to register for event")
+      // Safely extract meaningful backend error message
+      const backendMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        (Array.isArray(error.response?.data?.errors) ? error.response.data.errors.join(", ") : null) ||
+        "Failed to register for event"
+        
+      return rejectWithValue(backendMessage)
     }
-  },
+  }
 )
+
 
 // New action for quick registration
 export const quickRegisterForEvent = createAsyncThunk(
