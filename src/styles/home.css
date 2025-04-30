@@ -1485,6 +1485,7 @@ button {
   /* Fix for rotating circles */
   .premium-hero-image {
     max-width: 100%;
+    flex-direction: column;
   }
 
   .rotating-circles {
