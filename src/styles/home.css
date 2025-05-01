@@ -1372,6 +1372,9 @@ button {
     border-radius: var(--border-radius);
     padding: 15px;
   }
+  .about-image-container{
+    display: none;
+  }
 
   .premium-newsletter-wrapper {
     padding: 40px 20px;
@@ -1555,5 +1558,8 @@ button {
 
   .stat-label {
     font-size: 0.7rem;
+  }
+  .about-image-container{
+    display: none;
   }
 }
