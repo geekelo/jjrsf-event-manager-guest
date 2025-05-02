@@ -7,7 +7,6 @@ import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Admit from "./pages/admit"
 import EventRegistration from "./pages/eventRegistration"
-import StreamView from "./pages/streamView"
 import "./styles/feedback.css"
 
 function App() {
@@ -18,13 +17,10 @@ function App() {
         <GuestNavbar />
         <Routes>
           <Route path="/" element={<GuestEventsPage />} />
-
           <Route path="/event/:unique_id" element={<GuestEventAccess />} />
           <Route path="/event/frontdesk/:unique_id" element={<FrontDeskLogin />} />
           <Route path="/event/frontdesk/:unique_id/admit" element={<Admit />} />
-
           <Route path="/event/:unique_id/register" element={<EventRegistration />} />
-          <Route path="/stream/:unique_id" element={<StreamView />} />
         </Routes>
       </Router>
     </>
