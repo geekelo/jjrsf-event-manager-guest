@@ -1,42 +1,88 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useLocation } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import "../styles/access.css"
+import "../styles/streamView.css"
 import { fetchSingleEvent } from "../redux/slices/eventSlice"
 import { markAttendee } from "../redux/slices/attendeeSlice"
-import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users } from "lucide-react"
+import { fetchStreamingPlatforms, clearStreams } from "../redux/slices/streamSlice"
+import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users, FilmIcon, ChevronDown, ChevronUp, Globe, Youtube, Mic, Video, Copy, Check, Code } from "lucide-react"
 import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
 import FloatingFeedbackButton from "../components/forms/FloatingFeadbackButton"
+import StreamComponent from "../components/StreamComponent"
 
 const GuestEventAccess = () => {
   const { unique_id } = useParams()
-  const navigate = useNavigate()
+  const location = useLocation()
   const dispatch = useDispatch()
 
   // Destructure state from useSelector
-  const { singleEvent: event, loading, error } = useSelector((state) => state.events)
-
-  // Add new state from attendee reducer
-  const {
-    loading: attendeeLoading,
-    error: attendeeError,
-    success: attendeeSuccess,
-  } = useSelector((state) => state.attendee)
+  const { singleEvent: event, loading: eventLoading, error: eventError } = useSelector((state) => state.events)
+  const { platforms, loading: streamsLoading, error: streamsError } = useSelector((state) => state.streams)
+  const { loading: attendeeLoading, error: attendeeError, success: attendeeSuccess } = useSelector((state) => state.attendee)
 
   const [accessMode, setAccessMode] = useState("otp")
-  const [input, setInput] = useState(["", "", "", "", "", ""]) // Updated to 6 digits
+  const [input, setInput] = useState(["", "", "", "", "", ""])
   const [formError, setFormError] = useState("")
   const [countdown, setCountdown] = useState("")
-  const [eventStatus, setEventStatus] = useState("") // "upcoming", "ongoing", or "completed"
+  const [eventStatus, setEventStatus] = useState("")
   const [showQuickRegistration, setShowQuickRegistration] = useState(false)
+  const [showStream, setShowStream] = useState(false)
+  const [hasAccess, setHasAccess] = useState(false)
+  const [accessChecked, setAccessChecked] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
+  const [activePlatformId, setActivePlatformId] = useState(0)
+  const [showEmbedCode, setShowEmbedCode] = useState(false)
+  const [copied, setCopied] = useState(false)
 
+  // Fetch event data
   useEffect(() => {
     if (unique_id) {
       dispatch(fetchSingleEvent(unique_id))
     }
   }, [unique_id, dispatch])
+
+  // Check access and handle stream state
+  useEffect(() => {
+    const checkAccess = async () => {
+      if (event && !accessChecked) {
+        try {
+          const response = await fetch(`/api/v1/event_attendees/check_access?event_id=${event.id}`)
+          const data = await response.json()
+          setHasAccess(data.has_access)
+          if (data.has_access) {
+            dispatch(fetchStreamingPlatforms(event.id))
+            setShowStream(true)
+          }
+        } catch (error) {
+          console.error("Error checking access:", error)
+          setHasAccess(false)
+        } finally {
+          setAccessChecked(true)
+        }
+      }
+    }
+
+    checkAccess()
+
+    return () => {
+      dispatch(clearStreams())
+      setShowStream(false)
+      setHasAccess(false)
+      setAccessChecked(false)
+    }
+  }, [event, dispatch])
+
+  // Handle successful attendance marking
+  useEffect(() => {
+    if (attendeeSuccess && event) {
+      setHasAccess(true)
+      dispatch(fetchStreamingPlatforms(event.id))
+      setShowStream(true)
+    }
+  }, [attendeeSuccess, dispatch, event])
 
   useEffect(() => {
     if (event) {
@@ -73,14 +119,6 @@ const GuestEventAccess = () => {
     }
   }, [event])
 
-  // Update when attendance marking is successful
-  useEffect(() => {
-    if (attendeeSuccess) {
-      // Navigate to stream view page with event ID
-      navigate(`/stream/${unique_id}`)
-    }
-  }, [attendeeSuccess, navigate, unique_id])
-
   const toggleMode = () => {
     setAccessMode((prev) => (prev === "otp" ? "email" : "otp"))
     setInput(accessMode === "otp" ? [""] : ["", "", "", "", "", ""])
@@ -94,11 +132,7 @@ const GuestEventAccess = () => {
       setFormError("Please enter a valid email address.")
     } else {
       setFormError("")
-
-      // Convert OTP to lowercase before sending
       const accessValue = accessMode === "otp" ? input.join("").toLowerCase() : input.join("")
-
-      // Create payload based on access mode
       const payload = {
         event_id: event.id,
         mode: "online",
@@ -110,7 +144,6 @@ const GuestEventAccess = () => {
         payload.email = accessValue
       }
 
-      // Dispatch the markAttendee action
       dispatch(markAttendee(payload))
     }
   }
@@ -123,7 +156,136 @@ const GuestEventAccess = () => {
     setShowQuickRegistration(false)
   }
 
-  if (loading) {
+  const getPlatformIcon = (name) => {
+    switch (name?.toLowerCase()) {
+      case "youtube":
+        return <Youtube size={20} className="platform-icon youtube-icon" />
+      case "mixlr":
+        return <Mic size={20} className="platform-icon mixlr-icon" />
+      case "zoom":
+        return <Video size={20} className="platform-icon zoom-icon" />
+      default:
+        return <Globe size={20} className="platform-icon default-icon" />
+    }
+  }
+
+  const renderEmbeddedContent = (platform) => {
+    if (!platform?.embed_link && !platform?.embed_code) {
+      return (
+        <div className="no-embed-message">
+          <p>No embeddable content available for this platform.</p>
+          {platform?.visit_link && (
+            <a href={platform.visit_link} target="_blank" rel="noopener noreferrer" className="visit-link">
+              <Globe size={16} /> Visit Platform
+            </a>
+          )}
+        </div>
+      )
+    }
+
+    if (platform.embed_code) {
+      return <div className="embed-container" dangerouslySetInnerHTML={{ __html: platform.embed_code }}></div>
+    }
+
+    return (
+      <div className="embed-container">
+        <iframe
+          src={platform.embed_link}
+          title={`${platform.platform_name} content`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    )
+  }
+
+  const renderStreamSection = () => {
+    if (streamsLoading) {
+      return (
+        <div className="stream-container">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <span>Loading streams...</span>
+          </div>
+        </div>
+      )
+    }
+
+    if (streamsError) {
+      return (
+        <div className="stream-container">
+          <div className="error-message">
+            <p>Error loading streams: {streamsError}</p>
+          </div>
+        </div>
+      )
+    }
+
+    if (!platforms || platforms.length === 0) {
+      return (
+        <div className="stream-container">
+          <div className="no-platforms-message">
+            <p>No streams are currently available for this event.</p>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="stream-container">
+        <div className="stream-header">
+          <h2>
+            <FilmIcon size={24} />
+            {event.name} - Live Stream
+          </h2>
+        </div>
+
+        <div className="stream-accordion-wrapper">
+          <div className="stream-accordion">
+            <div className="accordion-header" onClick={() => setIsOpen(!isOpen)}>
+              <div className="accordion-title">
+                <FilmIcon size={20} className="accordion-icon" /> Event Streams
+                <span className="stream-count">{platforms.length}</span>
+              </div>
+              {isOpen ? <ChevronUp className="accordion-chevron" /> : <ChevronDown className="accordion-chevron" />}
+            </div>
+
+            {isOpen && (
+              <div className="accordion-content">
+                <div className="stream-tabs-container">
+                  <div className="platform-tabs">
+                    {platforms.map((platform) => (
+                      <button
+                        key={platform.id}
+                        className={`platform-tab ${activePlatformId === platform.id ? "active" : ""}`}
+                        onClick={() => setActivePlatformId(platform.id)}
+                      >
+                        {getPlatformIcon(platform.platform_name)}
+                        {platform.platform_name}
+                        <span className="view-count">{platform.views ?? 0}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {platforms.map(
+                    (platform) =>
+                      activePlatformId === platform.id && (
+                        <div className="stream-content" key={platform.id}>
+                          {renderEmbeddedContent(platform)}
+                        </div>
+                      ),
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (eventLoading) {
     return (
       <div className="event-loading">
         <div className="spinner" />
@@ -132,12 +294,12 @@ const GuestEventAccess = () => {
     )
   }
 
-  if (error || !event) {
+  if (eventError || !event) {
     return (
       <div className="event-error">
         <AlertCircle size={50} />
         <h3>Event Not Found</h3>
-        <p>{error || "We couldn't find the event you're looking for."}</p>
+        <p>{eventError || "We couldn't find the event you're looking for."}</p>
       </div>
     )
   }
@@ -161,185 +323,197 @@ const GuestEventAccess = () => {
 
   return (
     <div className="event-access-wrapper">
-      <h1 className="event-title">{event.name}</h1>
-      <p className="event-date">
-        <CalendarDays size={18} />
-        {new Date(event.start_date).toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </p>
-
-      <div className="event-card">
-        {event.image_url && (
-          <div className="event-image-container">
-            <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
-          </div>
-        )}
-
-        <div className="event-type-tag">
-          <Tag size={16} />
-          <span>{eventTypeTag}</span>
-        </div>
-
-        <div className="event-details-section">
-          {event.description && (
-            <div className="event-description">
-              <h3>About This Event</h3>
-              <p>{event.description}</p>
-            </div>
-          )}
-
-          <div className="event-meta-info">
-            {event.location && (
-              <div className="meta-detail">
-                <MapPin size={18} />
-                <span>Location: {event.location}</span>
-              </div>
-            )}
-
-            <div className="meta-detail">
-              <Calendar size={18} />
-              <span>
-                Registration Deadline:{" "}
-                {new Date(event.registration_deadline).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {isRegistrationClosed ? (
-          <p className="event-status closed">Registration Closed</p>
-        ) : (
-          <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
-            Register Now
-          </button>
-        )}
-
-        <div className={`countdown-container ${eventStatus}`}>
-          <p className="countdown">
-            <Clock size={24} />
-            {countdown}
+      {!hasAccess ? (
+        <>
+          <h1 className="event-title">{event.name}</h1>
+          <p className="event-date">
+            <CalendarDays size={18} />
+            {new Date(event.start_date).toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </p>
-        </div>
 
-        {isEventPastOrOngoing && (
-          <div className="quick-registration-section">
-            <button onClick={handleQuickRegistration} className="quick-register-btn">
-              <Users size={18} />
-              Quick Registration
-            </button>
-            <p className="quick-reg-note">Already at the event? Register quickly with minimal information.</p>
-          </div>
-        )}
-
-        {showAttend && (
-          <div className="access-section">
-            <h3>
-              {eventStatus === "upcoming"
-                ? "Attend Online"
-                : eventStatus === "ongoing"
-                  ? "Join Live Now"
-                  : "Watch Recording"}
-            </h3>
-            <label>{accessMode === "otp" ? "Enter 6-digit OTP" : "Enter your Email"}</label>
-
-            {/* OTP Input as 6 separate boxes */}
-            {accessMode === "otp" && (
-              <div className="otp-input-container">
-                {input.map((char, idx) => (
-                  <input
-                    key={idx}
-                    type="text"
-                    maxLength="1"
-                    value={char}
-                    onChange={(e) => {
-                      const newInput = [...input]
-                      newInput[idx] = e.target.value
-                      setInput(newInput)
-
-                      // Auto-focus next input field after entry
-                      if (e.target.value && idx < 5) {
-                        const nextInput = e.target.nextElementSibling
-                        if (nextInput) {
-                          nextInput.focus()
-                        }
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      // Handle backspace to go to previous input
-                      if (e.key === "Backspace" && !char && idx > 0) {
-                        const prevInput = e.target.previousElementSibling
-                        if (prevInput) {
-                          prevInput.focus()
-                        }
-                      }
-                    }}
-                    className="otp-input"
-                  />
-                ))}
+          <div className="event-card">
+            {event.image_url && (
+              <div className="event-image-container">
+                <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
               </div>
             )}
 
-            {accessMode === "email" && (
-              <input
-                type="email"
-                value={input.join("")}
-                onChange={(e) => setInput([e.target.value])}
-                className="access-input"
-                placeholder="Enter your email address"
-              />
+            <div className="event-type-tag">
+              <Tag size={16} />
+              <span>{eventTypeTag}</span>
+            </div>
+
+            <div className="event-details-section">
+              {event.description && (
+                <div className="event-description">
+                  <h3>About This Event</h3>
+                  <p>{event.description}</p>
+                </div>
+              )}
+
+              <div className="event-meta-info">
+                {event.location && (
+                  <div className="meta-detail">
+                    <MapPin size={18} />
+                    <span>Location: {event.location}</span>
+                  </div>
+                )}
+
+                <div className="meta-detail">
+                  <Calendar size={18} />
+                  <span>
+                    Registration Deadline:{" "}
+                    {new Date(event.registration_deadline).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {isRegistrationClosed ? (
+              <p className="event-status closed">Registration Closed</p>
+            ) : (
+              <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
+                Register Now
+              </button>
             )}
 
-            {formError && (
-              <p className="error-msg">
-                <AlertCircle size={16} style={{ marginRight: "8px" }} />
-                {formError}
+            <div className={`countdown-container ${eventStatus}`}>
+              <p className="countdown">
+                <Clock size={24} />
+                {countdown}
               </p>
+            </div>
+
+            {isEventPastOrOngoing && (
+              <div className="quick-registration-section">
+                <button onClick={handleQuickRegistration} className="quick-register-btn">
+                  <Users size={18} />
+                  Quick Registration
+                </button>
+                <p className="quick-reg-note">Already at the event? Register quickly with minimal information.</p>
+              </div>
             )}
 
-            <button onClick={handleValidation} className="watch-btn" disabled={attendeeLoading}>
-              {attendeeLoading ? (
-                <span>Processing...</span>
-              ) : (
-                <>
-                  <Eye size={18} style={{ marginRight: "8px" }} />
+            {showAttend && (
+              <div className="access-section">
+                <h3>
                   {eventStatus === "upcoming"
-                    ? "Watch Event"
+                    ? "Attend Online"
                     : eventStatus === "ongoing"
-                      ? "Join Live"
+                      ? "Join Live Now"
                       : "Watch Recording"}
-                </>
-              )}
-            </button>
+                </h3>
+                <label>{accessMode === "otp" ? "Enter 6-digit OTP" : "Enter your Email"}</label>
 
-            <p onClick={toggleMode} className="toggle-mode">
-              {accessMode === "otp" ? (
-                <>
-                  <Mail size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-                  Forgot your OTP? Use email instead
-                </>
-              ) : (
-                <>
-                  <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-                  Use 6-digit OTP instead
-                </>
-              )}
-            </p>
+                {accessMode === "otp" && (
+                  <div className="otp-input-container">
+                    {input.map((char, idx) => (
+                      <input
+                        key={idx}
+                        type="text"
+                        maxLength="1"
+                        value={char}
+                        onChange={(e) => {
+                          const newInput = [...input]
+                          newInput[idx] = e.target.value
+                          setInput(newInput)
+
+                          if (e.target.value && idx < 5) {
+                            const nextInput = e.target.nextElementSibling
+                            if (nextInput) {
+                              nextInput.focus()
+                            }
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Backspace" && !char && idx > 0) {
+                            const prevInput = e.target.previousElementSibling
+                            if (prevInput) {
+                              prevInput.focus()
+                            }
+                          }
+                        }}
+                        className="otp-input"
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {accessMode === "email" && (
+                  <input
+                    type="email"
+                    value={input.join("")}
+                    onChange={(e) => setInput([e.target.value])}
+                    className="access-input"
+                    placeholder="Enter your email address"
+                  />
+                )}
+
+                {formError && (
+                  <p className="error-msg">
+                    <AlertCircle size={16} style={{ marginRight: "8px" }} />
+                    {formError}
+                  </p>
+                )}
+
+                <button onClick={handleValidation} className="watch-btn" disabled={attendeeLoading}>
+                  {attendeeLoading ? (
+                    <span>Processing...</span>
+                  ) : (
+                    <>
+                      <Eye size={18} style={{ marginRight: "8px" }} />
+                      {eventStatus === "upcoming"
+                        ? "Watch Event"
+                        : eventStatus === "ongoing"
+                          ? "Join Live"
+                          : "Watch Recording"}
+                    </>
+                  )}
+                </button>
+
+                <p onClick={toggleMode} className="toggle-mode">
+                  {accessMode === "otp" ? (
+                    <>
+                      <Mail size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+                      Forgot your OTP? Use email instead
+                    </>
+                  ) : (
+                    <>
+                      <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+                      Use 6-digit OTP instead
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <>
+          <button className="back-button" onClick={() => setShowStream(false)}>
+            ←
+          </button>
+          <StreamComponent 
+            platforms={platforms}
+            loading={streamsLoading}
+            error={streamsError}
+            eventName={event.name}
+            onBack={() => setShowStream(false)}
+          />
+          {event && <FloatingFeedbackButton eventId={event.id} />}
+        </>
+      )}
 
       {showQuickRegistration && event && <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />}
-
-      {/* Add the floating feedback button */}
-      {event && <FloatingFeedbackButton eventId={event.id} />}
     </div>
   )
 }

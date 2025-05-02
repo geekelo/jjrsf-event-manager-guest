@@ -3,6 +3,7 @@ import eventsReducer from "./slices/eventSlice"
 import frontdeskReducer from "./slices/frontdeskSlice"
 import attendeeReducer from "./slices/attendeeSlice"
 import feedbackReducer from "./slices/feedbackSlice"
+import streamReducer from "./slices/streamSlice"
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     frontdesk: frontdeskReducer,
     attendee: attendeeReducer,
     feedback: feedbackReducer,
+    streams: streamReducer,
   },
 })
