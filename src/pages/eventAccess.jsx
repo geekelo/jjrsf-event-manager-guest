@@ -119,6 +119,15 @@ const GuestEventAccess = () => {
     }
   }, [event])
 
+  // 1. Add a useEffect to show backend errors as feedback and reset loading state
+  useEffect(() => {
+    if (attendeeError) {
+      setFormError(attendeeError || "Invalid OTP or Email. Please try again.");
+      // Optionally reset input if you want
+      // setInput(accessMode === "otp" ? ["", "", "", "", "", ""] : [""]);
+    }
+  }, [attendeeError]);
+
   const toggleMode = () => {
     setAccessMode((prev) => (prev === "otp" ? "email" : "otp"))
     setInput(accessMode === "otp" ? [""] : ["", "", "", "", "", ""])
@@ -325,195 +334,211 @@ const GuestEventAccess = () => {
     <div className="event-access-wrapper">
       {!hasAccess ? (
         <>
-          <h1 className="event-title">{event.name}</h1>
-          <p className="event-date">
-            <CalendarDays size={18} />
-            {new Date(event.start_date).toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
+      <h1 className="event-title">{event.name}</h1>
+      <p className="event-date">
+        <CalendarDays size={18} />
+        {new Date(event.start_date).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </p>
 
-          <div className="event-card">
-            {event.image_url && (
-              <div className="event-image-container">
-                <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
-              </div>
-            )}
-
-            <div className="event-type-tag">
-              <Tag size={16} />
-              <span>{eventTypeTag}</span>
-            </div>
-
-            <div className="event-details-section">
-              {event.description && (
-                <div className="event-description">
-                  <h3>About This Event</h3>
-                  <p>{event.description}</p>
-                </div>
-              )}
-
-              <div className="event-meta-info">
-                {event.location && (
-                  <div className="meta-detail">
-                    <MapPin size={18} />
-                    <span>Location: {event.location}</span>
-                  </div>
-                )}
-
-                <div className="meta-detail">
-                  <Calendar size={18} />
-                  <span>
-                    Registration Deadline:{" "}
-                    {new Date(event.registration_deadline).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {isRegistrationClosed ? (
-              <p className="event-status closed">Registration Closed</p>
-            ) : (
-              <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
-                Register Now
-              </button>
-            )}
-
-            <div className={`countdown-container ${eventStatus}`}>
-              <p className="countdown">
-                <Clock size={24} />
-                {countdown}
-              </p>
-            </div>
-
-            {isEventPastOrOngoing && (
-              <div className="quick-registration-section">
-                <button onClick={handleQuickRegistration} className="quick-register-btn">
-                  <Users size={18} />
-                  Quick Registration
-                </button>
-                <p className="quick-reg-note">Already at the event? Register quickly with minimal information.</p>
-              </div>
-            )}
-
-            {showAttend && (
-              <div className="access-section">
-                <h3>
-                  {eventStatus === "upcoming"
-                    ? "Attend Online"
-                    : eventStatus === "ongoing"
-                      ? "Join Live Now"
-                      : "Watch Recording"}
-                </h3>
-                <label>{accessMode === "otp" ? "Enter 6-digit OTP" : "Enter your Email"}</label>
-
-                {accessMode === "otp" && (
-                  <div className="otp-input-container">
-                    {input.map((char, idx) => (
-                      <input
-                        key={idx}
-                        type="text"
-                        maxLength="1"
-                        value={char}
-                        onChange={(e) => {
-                          const newInput = [...input]
-                          newInput[idx] = e.target.value
-                          setInput(newInput)
-
-                          if (e.target.value && idx < 5) {
-                            const nextInput = e.target.nextElementSibling
-                            if (nextInput) {
-                              nextInput.focus()
-                            }
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Backspace" && !char && idx > 0) {
-                            const prevInput = e.target.previousElementSibling
-                            if (prevInput) {
-                              prevInput.focus()
-                            }
-                          }
-                        }}
-                        className="otp-input"
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {accessMode === "email" && (
-                  <input
-                    type="email"
-                    value={input.join("")}
-                    onChange={(e) => setInput([e.target.value])}
-                    className="access-input"
-                    placeholder="Enter your email address"
-                  />
-                )}
-
-                {formError && (
-                  <p className="error-msg">
-                    <AlertCircle size={16} style={{ marginRight: "8px" }} />
-                    {formError}
-                  </p>
-                )}
-
-                <button onClick={handleValidation} className="watch-btn" disabled={attendeeLoading}>
-                  {attendeeLoading ? (
-                    <span>Processing...</span>
-                  ) : (
-                    <>
-                      <Eye size={18} style={{ marginRight: "8px" }} />
-                      {eventStatus === "upcoming"
-                        ? "Watch Event"
-                        : eventStatus === "ongoing"
-                          ? "Join Live"
-                          : "Watch Recording"}
-                    </>
-                  )}
-                </button>
-
-                <p onClick={toggleMode} className="toggle-mode">
-                  {accessMode === "otp" ? (
-                    <>
-                      <Mail size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-                      Forgot your OTP? Use email instead
-                    </>
-                  ) : (
-                    <>
-                      <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-                      Use 6-digit OTP instead
-                    </>
-                  )}
-                </p>
-              </div>
-            )}
+      <div className="event-card">
+        {event.image_url && (
+          <div className="event-image-container">
+            <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
           </div>
+        )}
+
+        <div className="event-type-tag">
+          <Tag size={16} />
+          <span>{eventTypeTag}</span>
+        </div>
+
+        <div className="event-details-section">
+          {event.description && (
+            <div className="event-description">
+              <h3>About This Event</h3>
+              <p>{event.description}</p>
+            </div>
+          )}
+
+          <div className="event-meta-info">
+            {event.location && (
+              <div className="meta-detail">
+                <MapPin size={18} />
+                <span>Location: {event.location}</span>
+              </div>
+            )}
+
+            <div className="meta-detail">
+              <Calendar size={18} />
+              <span>
+                Registration Deadline:{" "}
+                {new Date(event.registration_deadline).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {isRegistrationClosed ? (
+          <p className="event-status closed">Registration Closed</p>
+        ) : (
+          <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
+            Register Now
+          </button>
+        )}
+
+        <div className={`countdown-container ${eventStatus}`}>
+          <p className="countdown">
+            <Clock size={24} />
+            {countdown}
+          </p>
+        </div>
+
+        {isEventPastOrOngoing && (
+          <div className="quick-registration-section">
+            <button onClick={handleQuickRegistration} className="quick-register-btn">
+              <Users size={18} />
+              Quick Registration
+            </button>
+            <p className="quick-reg-note">Already at the event? Register quickly with minimal information.</p>
+          </div>
+        )}
+
+        {showAttend && (
+          <div className="access-section">
+            <h3>
+              {eventStatus === "upcoming"
+                ? "Attend Online"
+                : eventStatus === "ongoing"
+                  ? "Join Live Now"
+                  : "Watch Recording"}
+            </h3>
+            <label>{accessMode === "otp" ? "Enter 6-digit OTP" : "Enter your Email"}</label>
+
+            {accessMode === "otp" && (
+              <div className="otp-input-container">
+                {input.map((char, idx) => (
+                  <input
+                    key={idx}
+                    type="text"
+                    maxLength="1"
+                    value={char}
+                    onChange={(e) => {
+                      const newInput = [...input]
+                      newInput[idx] = e.target.value
+                      setInput(newInput)
+
+                      if (e.target.value && idx < 5) {
+                        const nextInput = e.target.nextElementSibling
+                        if (nextInput) {
+                          nextInput.focus()
+                        }
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Backspace" && !char && idx > 0) {
+                        const prevInput = e.target.previousElementSibling
+                        if (prevInput) {
+                          prevInput.focus()
+                        }
+                      }
+                    }}
+                    className="otp-input"
+                  />
+                ))}
+              </div>
+            )}
+
+            {accessMode === "email" && (
+              <input
+                type="email"
+                value={input.join("")}
+                onChange={(e) => setInput([e.target.value])}
+                className="access-input"
+                placeholder="Enter your email address"
+              />
+            )}
+
+            {/* Show backend error feedback */}
+            {formError && (
+              <p className="error-msg">
+                <AlertCircle size={16} style={{ marginRight: "8px" }} />
+                {formError}
+              </p>
+            )}
+
+            <button
+              onClick={handleValidation}
+              className="watch-btn"
+              disabled={attendeeLoading}
+            >
+              {attendeeLoading ? (
+                <span>Processing...</span>
+              ) : (
+                <>
+                  <Eye size={18} style={{ marginRight: "8px" }} />
+                  {eventStatus === "upcoming"
+                    ? "Watch Event"
+                    : eventStatus === "ongoing"
+                    ? "Join Live"
+                    : "Watch Recording"}
+                </>
+              )}
+            </button>
+
+            <p onClick={toggleMode} className="toggle-mode">
+              {accessMode === "otp" ? (
+                <>
+                  <Mail size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+                  Forgot your OTP? Use email instead
+                </>
+              ) : (
+                <>
+                  <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+                  Use 6-digit OTP instead
+                </>
+              )}
+            </p>
+          </div>
+        )}
+      </div>
         </>
       ) : (
         <>
-          <button className="back-button" onClick={() => setShowStream(false)}>
-            ←
+          {/* 2. Fix the back button to reset hasAccess and accessChecked */}
+          <button
+            className="back-button"
+            onClick={() => {
+              setShowStream(false);
+              setHasAccess(false);
+              setAccessChecked(false);
+              setFormError(""); // Optionally clear error
+              setInput(accessMode === "otp" ? ["", "", "", "", "", ""] : [""]);
+            }}
+          >
+            ← 
           </button>
-          <StreamComponent 
+          <StreamComponent
             platforms={platforms}
             loading={streamsLoading}
             error={streamsError}
             eventName={event.name}
-            onBack={() => setShowStream(false)}
           />
           {event && <FloatingFeedbackButton eventId={event.id} />}
         </>
       )}
 
-      {showQuickRegistration && event && <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />}
+      {showQuickRegistration && event && (
+        <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />
+      )}
     </div>
   )
 }
