@@ -82,7 +82,7 @@ const GuestEventAccess = () => {
       dispatch(fetchStreamingPlatforms(event.id))
       setShowStream(true)
     }
-  }, [attendeeSuccess, dispatch, event])
+  }, [attendeeSuccess, dispatch, event]) 
 
   useEffect(() => {
     if (event) {
