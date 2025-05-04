@@ -288,7 +288,7 @@ input[type="text"],
 input[type="email"],
 select {
   width: 100%;
-  padding: 15px 15px 15px 45px;
+  padding: 15px 15px 15px 15px;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   font-family: var(--font-body);
@@ -844,7 +844,7 @@ select {
   input[type="text"],
   input[type="email"],
   select {
-    padding: 12px 12px 12px 40px;
+    padding: 12px 12px 12px 12px;
     font-size: 0.95rem;
   }
 
@@ -963,7 +963,7 @@ select {
   input[type="text"],
   input[type="email"],
   select {
-    padding: 10px 10px 10px 35px;
+    padding: 10px 10px 10px 10px;
     font-size: 0.9rem;
   }
 
