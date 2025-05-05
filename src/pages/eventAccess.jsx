@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useLocation } from "react-router-dom"
+import { useParams, useLocation, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import "../styles/access.css"
 import "../styles/streamView.css"
@@ -17,6 +17,7 @@ const GuestEventAccess = () => {
   const { unique_id } = useParams()
   const location = useLocation()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   // Destructure state from useSelector
   const { singleEvent: event, loading: eventLoading, error: eventError } = useSelector((state) => state.events)
