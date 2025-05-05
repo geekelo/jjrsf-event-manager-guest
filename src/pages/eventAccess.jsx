@@ -8,7 +8,7 @@ import "../styles/streamView.css"
 import { fetchSingleEvent } from "../redux/slices/eventSlice"
 import { markAttendee } from "../redux/slices/attendeeSlice"
 import { fetchStreamingPlatforms, clearStreams } from "../redux/slices/streamSlice"
-import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users, FilmIcon, ChevronDown, ChevronUp, Globe, Youtube, Mic, Video, Copy, Check, Code } from "lucide-react"
+import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users, FilmIcon, ChevronDown, ChevronUp, Globe, Youtube, Mic, Video, Copy, Check, Code, User, Phone } from "lucide-react"
 import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
 import FloatingFeedbackButton from "../components/forms/FloatingFeadbackButton"
 import StreamComponent from "../components/StreamComponent"
@@ -23,7 +23,9 @@ const GuestEventAccess = () => {
   const { singleEvent: event, loading: eventLoading, error: eventError } = useSelector((state) => state.events)
   const { platforms, loading: streamsLoading, error: streamsError } = useSelector((state) => state.streams)
   const { loading: attendeeLoading, error: attendeeError, success: attendeeSuccess } = useSelector((state) => state.attendee)
+  const accessModes = ["otp", "email", "name", "phone"]
 
+  
   const [accessMode, setAccessMode] = useState("otp")
   const [input, setInput] = useState(["", "", "", "", "", ""])
   const [formError, setFormError] = useState("")
@@ -130,33 +132,58 @@ const GuestEventAccess = () => {
   }, [attendeeError]);
 
   const toggleMode = () => {
-    setAccessMode((prev) => (prev === "otp" ? "email" : "otp"))
-    setInput(accessMode === "otp" ? [""] : ["", "", "", "", "", ""])
+    const currentIndex = accessModes.indexOf(accessMode)
+    const nextMode = accessModes[(currentIndex + 1) % accessModes.length]
+    setAccessMode(nextMode)
+    setInput(nextMode === "otp" ? ["", "", "", "", "", ""] : [""])
     setFormError("")
   }
-
   const handleValidation = () => {
-    if (accessMode === "otp" && input.join("").length !== 6) {
-      setFormError("Please enter a valid 6-digit OTP.")
-    } else if (accessMode === "email" && !/\S+@\S+\.\S+/.test(input.join(""))) {
-      setFormError("Please enter a valid email address.")
-    } else {
-      setFormError("")
-      const accessValue = accessMode === "otp" ? input.join("").toLowerCase() : input.join("")
-      const payload = {
-        event_id: event.id,
-        mode: "online",
+    const value = input.join("").trim()
+  
+    if (accessMode === "otp") {
+      if (value.length !== 6) {
+        setFormError("Please enter a valid 6-digit OTP.")
+        return
       }
-
-      if (accessMode === "otp") {
-        payload.otp = accessValue
-      } else {
-        payload.email = accessValue
+    } else if (accessMode === "email") {
+      if (!/\S+@\S+\.\S+/.test(value)) {
+        setFormError("Please enter a valid email address.")
+        return
       }
-
-      dispatch(markAttendee(payload))
+    } else if (accessMode === "name") {
+      if (value.length < 2) {
+        setFormError("Please enter your full name.")
+        return
+      }
+    } else if (accessMode === "phone") {
+      if (!/^\d{7,15}$/.test(value)) {  // Simple phone validation (7 to 15 digits)
+        setFormError("Please enter a valid phone number.")
+        return
+      }
     }
+  
+    setFormError("")
+    const accessValue = value.toLowerCase()
+  
+    const payload = {
+      event_id: event.id,
+      mode: "online",
+    }
+  
+    if (accessMode === "otp") {
+      payload.otp = accessValue
+    } else if (accessMode === "email") {
+      payload.email = accessValue
+    } else if (accessMode === "name") {
+      payload.name = accessValue
+    } else if (accessMode === "phone") {
+      payload.phone = accessValue
+    }
+  
+    dispatch(markAttendee(payload))
   }
+  
 
   const handleQuickRegistration = () => {
     setShowQuickRegistration(true)
@@ -425,56 +452,76 @@ const GuestEventAccess = () => {
             <label>{accessMode === "otp" ? "Enter 6-digit OTP" : "Enter your Email"}</label>
 
             {accessMode === "otp" && (
-              <div className="otp-input-container">
-                {input.map((char, idx) => (
-                  <input
-                    key={idx}
-                    type="text"
-                    maxLength="1"
-                    value={char}
-                    onChange={(e) => {
-                      const newInput = [...input]
-                      newInput[idx] = e.target.value
-                      setInput(newInput)
+  <div className="otp-input-container">
+    {input.map((char, idx) => (
+      <input
+        key={idx}
+        type="text"
+        maxLength="1"
+        value={char}
+        onChange={(e) => {
+          const newInput = [...input]
+          newInput[idx] = e.target.value
+          setInput(newInput)
 
-                      if (e.target.value && idx < 5) {
-                        const nextInput = e.target.nextElementSibling
-                        if (nextInput) {
-                          nextInput.focus()
-                        }
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Backspace" && !char && idx > 0) {
-                        const prevInput = e.target.previousElementSibling
-                        if (prevInput) {
-                          prevInput.focus()
-                        }
-                      }
-                    }}
-                    className="otp-input"
-                  />
-                ))}
-              </div>
-            )}
+          if (e.target.value && idx < 5) {
+            const nextInput = e.target.nextElementSibling
+            if (nextInput) {
+              nextInput.focus()
+            }
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Backspace" && !char && idx > 0) {
+            const prevInput = e.target.previousElementSibling
+            if (prevInput) {
+              prevInput.focus()
+            }
+          }
+        }}
+        className="otp-input"
+      />
+    ))}
+  </div>
+)}
 
-            {accessMode === "email" && (
-              <input
-                type="email"
-                value={input.join("")}
-                onChange={(e) => setInput([e.target.value])}
-                className="access-input"
-                placeholder="Enter your email address"
-              />
-            )}
+{accessMode === "email" && (
+  <input
+    type="email"
+    value={input.join("")}
+    onChange={(e) => setInput([e.target.value])}
+    className="access-input"
+    placeholder="Enter your email address"
+  />
+)}
 
-            {/* Show backend error feedback */}
-            {formError && (
-              <p className="error-msg">
-                <AlertCircle size={16} style={{ marginRight: "8px" }} />
-                {formError}
-              </p>
-            )}
+{accessMode === "name" && (
+  <input
+    type="text"
+    value={input.join("")}
+    onChange={(e) => setInput([e.target.value])}
+    className="access-input"
+    placeholder="Enter your full name"
+  />
+)}
+
+{accessMode === "phone" && (
+  <input
+    type="tel"
+    value={input.join("")}
+    onChange={(e) => setInput([e.target.value.replace(/\D/g, "")])}  // allow only digits
+    className="access-input"
+    placeholder="Enter your phone number"
+  />
+)}
+
+{formError && (
+  <p className="error-msg">
+    <AlertCircle size={16} style={{ marginRight: "8px" }} />
+    {formError}
+  </p>
+)}
+
 
             <button
               onClick={handleValidation}
@@ -496,18 +543,29 @@ const GuestEventAccess = () => {
             </button>
 
             <p onClick={toggleMode} className="toggle-mode">
-              {accessMode === "otp" ? (
-                <>
-                  <Mail size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-                  Forgot your OTP? Use email instead
-                </>
-              ) : (
-                <>
-                  <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-                  Use 6-digit OTP instead
-                </>
-              )}
-            </p>
+  {accessMode === "otp" ? (
+    <>
+      <Mail size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+      Forgot your OTP? Use email instead
+    </>
+  ) : accessMode === "email" ? (
+    <>
+      <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+      Use 6-digit OTP instead
+    </>
+  ) : accessMode === "name" ? (
+    <>
+      <Phone size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+      Use phone number instead
+    </>
+  ) : (
+    <>
+      <User size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
+      Use name instead
+    </>
+  )}
+</p>
+
           </div>
         )}
       </div>
