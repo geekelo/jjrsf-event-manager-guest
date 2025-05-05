@@ -32,6 +32,8 @@ const EventRegistration = () => {
     gender: "",
     member: false,
     preferred_attendance: "",
+    family: false,
+    family_members: "", 
   })
 
   // Form validation state
@@ -96,6 +98,10 @@ const EventRegistration = () => {
       errors.email = "Please enter a valid email address"
     }
 
+    if (formData.family && !formData.family_members.trim()) {
+      errors.family_members = "Please enter the names of family members, separated by commas"
+    }
+
     setValidationErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -109,13 +115,17 @@ const EventRegistration = () => {
       return
     }
 
-    dispatch(
-      registerForEvent({
-        eventId: event.id,
-        formData,
-      }),
-    )
-  }
+    const formattedFamilyMembers = formData.family_members
+    .split(",")
+    .map((name) => name.trim())
+
+  dispatch(
+    registerForEvent({
+      eventId: event.id,
+      formData: { ...formData, family_members: formattedFamilyMembers },
+    }),
+  )
+}  
 
   useEffect(() => {
     if (registrationSuccess) {
@@ -350,6 +360,53 @@ const EventRegistration = () => {
                     )}
                   </div>
                 </div>
+ {/* Family Registration Section */}
+ <div className="form-group">
+                    <label>Are you registering for your family?</label>
+                    <div>
+                      <label className="radio-container">
+                        <input
+                          type="radio"
+                          name="family"
+                          value="true"
+                          checked={formData.family === true}
+                          onChange={handleChange}
+                        />
+                        Yes
+                      </label>
+                      <label className="radio-container">
+                        <input
+                          type="radio"
+                          name="family"
+                          value="false"
+                          checked={formData.family === false}
+                          onChange={handleChange}
+                        />
+                        Just Me Alone
+                      </label>
+                    </div>
+                  </div>
+
+                  {formData.family && (
+                    <div className="form-group">
+                      <label htmlFor="family_members">
+                        Family Member Names (separate with commas)
+                      </label>
+                      <input
+                        type="text"
+                        id="family_members"
+                        name="family_members"
+                        value={formData.family_members}
+                        onChange={handleChange}
+                        placeholder="Enter family member names"
+                        className={validationErrors.family_members ? "error" : ""}
+                      />
+                      {validationErrors.family_members && (
+                        <p className="error-message">{validationErrors.family_members}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 <div className="form-group checkbox-group">
                   <label className="checkbox-container">
@@ -357,7 +414,7 @@ const EventRegistration = () => {
                     <span className="checkmark"></span>I am a member of JJRS Foundation
                   </label>
                 </div>
-              </div>
+              
 
               <div className="form-note">
                 <Heart size={16} className="note-icon" />
