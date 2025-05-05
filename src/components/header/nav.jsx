@@ -1,17 +1,17 @@
 "use client"
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import "../../styles/home.css"
 
 const GuestNavbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const location = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY
       if (offset > 60) {
-        // Reduced from 80 to 60 for quicker transition on mobile
         setScrolled(true)
       } else {
         setScrolled(false)
@@ -26,7 +26,6 @@ const GuestNavbar = () => {
 
   const toggleMenu = () => setIsOpen(!isOpen)
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isOpen && !event.target.closest(".premium-nav") && !event.target.closest(".premium-mobile-menu-button")) {
@@ -39,6 +38,22 @@ const GuestNavbar = () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [isOpen])
+
+  const handleSectionClick = (e, sectionId) => {
+    e.preventDefault()
+    setIsOpen(false)
+
+    if (location.pathname === "/") {
+      const section = document.getElementById(sectionId)
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" })
+      } else {
+        window.location.hash = sectionId
+      }
+    } else {
+      window.location.href = `/#${sectionId}`
+    }
+  }
 
   return (
     <header className={`premium-header ${scrolled ? "scrolled" : ""}`}>
@@ -69,19 +84,13 @@ const GuestNavbar = () => {
               </Link>
             </li>
             <li>
-              <a href="#events" onClick={() => setIsOpen(false)}>
-                Events
-              </a>
+              <a href="/#events" onClick={(e) => handleSectionClick(e, "events")}>Events</a>
             </li>
             <li>
-              <a href="#faqs" onClick={() => setIsOpen(false)}>
-                FAQs
-              </a>
+              <a href="/#faqs" onClick={(e) => handleSectionClick(e, "faqs")}>FAQs</a>
             </li>
             <li>
-              <a href="#contact" onClick={() => setIsOpen(false)}>
-                Contact
-              </a>
+              <a href="/#contact" onClick={(e) => handleSectionClick(e, "contact")}>Contact</a>
             </li>
           </ul>
         </nav>
