@@ -183,6 +183,10 @@
   padding-right: 45px; /* Add space for the toggle button */
 }
 
+.front-desk-input::placeholder {
+  padding-left: 15px;
+}
+
 /* Add visibility toggle button styles */
 .visibility-toggle {
   position: absolute;

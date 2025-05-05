@@ -309,6 +309,12 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(68, 39, 119, 0.1);
 }
 
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+select::placeholder {
+  padding-left: 20px;
+}
+
 input.error,
 select.error {
   border-color: var(--danger);
