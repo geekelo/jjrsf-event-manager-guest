@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { User, Mail, Phone, X, Loader2, Check } from "lucide-react"
+import { User, Mail, Phone, X, Loader2, Check, Users } from "lucide-react"
 import { toast } from "react-toastify"
 import { useDispatch, useSelector } from "react-redux"
 import { quickRegisterForEvent, resetQuickRegistration } from "../../redux/slices/eventSlice"
@@ -17,6 +17,8 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
     email: "",
     phone: "",
     gender: "",
+    registeringForFamily: "alone", // 'alone' or 'family'
+    familyNames: "",
   })
 
   const [errors, setErrors] = useState({})
@@ -43,6 +45,8 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
           email: "",
           phone: "",
           gender: "",
+          registeringForFamily: "alone",
+          familyNames: "",
         })
         onClose()
       }, 2000)
@@ -60,7 +64,6 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
       [name]: value,
     })
 
-    // Clear error when field is edited
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -84,6 +87,10 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
       newErrors.email = "Please enter a valid email address"
     }
 
+    if (formData.registeringForFamily === "family" && !formData.familyNames.trim()) {
+      newErrors.familyNames = "Please enter family member names"
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -96,7 +103,6 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
       return
     }
 
-    // Dispatch the Redux action for quick registration
     dispatch(
       quickRegisterForEvent({
         eventId,
@@ -105,6 +111,8 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
           email: formData.email || null,
           phone: formData.phone || null,
           gender: formData.gender,
+          registeringForFamily: formData.registeringForFamily,
+          familyNames: formData.familyNames || null,
         },
       }),
     )
@@ -162,14 +170,13 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
           </div>
 
           <div className="quick-reg-field">
-            <label htmlFor="email">Email </label>
+            <label htmlFor="email">Email</label>
             <div className="input-wrapper">
               <Mail size={16} className="input-icon" />
               <input
                 type="email"
                 id="email"
                 name="email"
-                required
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email address"
@@ -180,7 +187,7 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
           </div>
 
           <div className="quick-reg-field">
-            <label htmlFor="phone">Phone </label>
+            <label htmlFor="phone">Phone</label>
             <div className="input-wrapper">
               <Phone size={16} className="input-icon" />
               <input
@@ -213,6 +220,56 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
             </div>
             {errors.gender && <p className="error-message">{errors.gender}</p>}
           </div>
+
+          {/* === NEW SECTION === */}
+          <div >
+            <label>Are you registering for your family?</label>
+            <div >
+              <label>
+                <input
+                  type="radio"
+                  name="registeringForFamily"
+                  value="alone"
+                  checked={formData.registeringForFamily === "alone"}
+                  onChange={handleChange}
+                />
+                Just me alone
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="registeringForFamily"
+                  value="family"
+                  checked={formData.registeringForFamily === "family"}
+                  onChange={handleChange}
+                />
+                Yes, include family
+              </label>
+            </div>
+          </div>
+
+          {formData.registeringForFamily === "family" && (
+            <div className="quick-reg-field">
+              <label htmlFor="familyNames">
+                Family Members' Names <span className="required">*</span>
+              </label>
+              <div className="input-wrapper">
+                <Users size={16} className="input-icon" />
+                <input
+                  type="text"
+                  id="familyNames"
+                  name="familyNames"
+                  value={formData.familyNames}
+                  onChange={handleChange}
+                  placeholder="Enter names separated by commas"
+                  className={errors.familyNames ? "error" : ""}
+                />
+              </div>
+              <small className="note">Please separate each name with a comma (e.g., John Doe, Jane Doe)</small>
+              {errors.familyNames && <p className="error-message">{errors.familyNames}</p>}
+            </div>
+          )}
+          {/* === END NEW SECTION === */}
 
           <div className="quick-reg-actions">
             <button type="button" onClick={onClose} className="cancel-button">
