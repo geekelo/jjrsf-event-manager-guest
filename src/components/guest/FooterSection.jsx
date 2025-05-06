@@ -90,7 +90,9 @@ const FooterSection = () => {
                   <a href="#faqs">FAQs</a>
                 </li>
                 <li>
-                  <Link to="/admin/login">Admin Login</Link>
+                  <a href="https://wa.me/+2347070392387" target="_blank" rel="noopener noreferrer">
+                    Contact Developer
+                  </a>
                 </li>
               </ul>
             </div>
