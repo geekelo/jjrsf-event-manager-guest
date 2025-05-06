@@ -368,7 +368,7 @@ const EventRegistration = () => {
                     )}
                   </div>
 
-                  {event?.onsite && event?.online && (
+                  {(event?.onsite && event?.online) && (
                     <div className="form-group">
                       <label htmlFor="preferred_attendance">
                         Preferred Attendance <span className="required">*</span>
