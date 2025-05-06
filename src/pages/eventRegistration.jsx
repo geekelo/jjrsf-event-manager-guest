@@ -31,7 +31,7 @@ const EventRegistration = () => {
     phone: "",
     gender: "",
     member: false,
-    preferred_attendance: "",
+    preferred_attendance: event?.onsite && event?.online ? "" : event?.onsite ? "onsite" : "online",
     family: false,
     family_members: "", 
   })
@@ -180,7 +180,13 @@ const EventRegistration = () => {
 
   return (
     <div className="registration-wrapper">
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick pauseOnHover />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+      />
 
       {registrationSuccess ? (
         <div className="registration-success">
@@ -232,10 +238,12 @@ const EventRegistration = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Enter your full name"
-                      className={validationErrors.name ? "error" : ""}
+                      className={`register-input ${validationErrors.name} ? "error" : ""`}
                     />
                   </div>
-                  {validationErrors.name && <p className="error-message">{validationErrors.name}</p>}
+                  {validationErrors.name && (
+                    <p className="error-message">{validationErrors.name}</p>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -248,6 +256,7 @@ const EventRegistration = () => {
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
+                      className="register-input"
                       placeholder="Enter your address "
                     />
                   </div>
@@ -261,14 +270,15 @@ const EventRegistration = () => {
                       type="email"
                       id="email"
                       name="email"
-                      required
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="Enter your email "
-                      className={validationErrors.email ? "error" : ""}
+                      placeholder="Enter your email"
+                      className={`register-input ${validationErrors.email} ? "error" : ""`}
                     />
                   </div>
-                  {validationErrors.email && <p className="error-message">{validationErrors.email}</p>}
+                  {validationErrors.email && (
+                    <p className="error-message">{validationErrors.email}</p>
+                  )}
                 </div>
               </div>
 
@@ -289,7 +299,8 @@ const EventRegistration = () => {
                         name="whatsapp"
                         value={formData.whatsapp}
                         onChange={handleChange}
-                        placeholder="WhatsApp number "
+                        className="register-input"
+                        placeholder="(+234) WhatsApp number "
                       />
                     </div>
                   </div>
@@ -304,8 +315,25 @@ const EventRegistration = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="Phone number"
+                        className="register-input"
+                        placeholder="(+234) Phone number"
                       />
+                    </div>
+                    <div className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      id="phone"
+                      name="phone"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            phone: prev.whatsapp,
+                          }));
+                        }
+                      }}
+                    />
+                    <label htmlFor="phone">Same as WhatsApp number</label>
                     </div>
                   </div>
                 </div>
@@ -335,97 +363,123 @@ const EventRegistration = () => {
                         <option value="m">Male</option>
                       </select>
                     </div>
-                    {validationErrors.gender && <p className="error-message">{validationErrors.gender}</p>}
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="preferred_attendance">
-                      Preferred Attendance <span className="required">*</span>
-                    </label>
-                    <div className="select-wrapper">
-                      <select
-                        id="preferred_attendance"
-                        name="preferred_attendance"
-                        value={formData.preferred_attendance}
-                        onChange={handleChange}
-                        className={validationErrors.preferred_attendance ? "error" : ""}
-                      >
-                        <option value="">Select attendance mode</option>
-                        <option value="online">online</option>
-                        <option value="offline">offline</option>
-                      </select>
-                    </div>
-                    {validationErrors.preferred_attendance && (
-                      <p className="error-message">{validationErrors.preferred_attendance}</p>
+                    {validationErrors.gender && (
+                      <p className="error-message">{validationErrors.gender}</p>
                     )}
                   </div>
-                </div>
- {/* Family Registration Section */}
- <div className="form-group">
-                    <label>Are you registering for your family?</label>
-                    <div>
-                      <label className="radio-container">
-                        <input
-                          type="radio"
-                          name="family"
-                          value="true"
-                          checked={formData.family === true}
-                          onChange={handleChange}
-                        />
-                        Yes
-                      </label>
-                      <label className="radio-container">
-                        <input
-                          type="radio"
-                          name="family"
-                          value="false"
-                          checked={formData.family === false}
-                          onChange={handleChange}
-                        />
-                        Just Me Alone
-                      </label>
-                    </div>
-                  </div>
 
-                  {formData.family && (
+                  {event?.onsite && event?.online && (
                     <div className="form-group">
-                      <label htmlFor="family_members">
-                        Family Member Names (separate with commas)
+                      <label htmlFor="preferred_attendance">
+                        Preferred Attendance <span className="required">*</span>
                       </label>
-                      <input
-                        type="text"
-                        id="family_members"
-                        name="family_members"
-                        value={formData.family_members}
-                        onChange={handleChange}
-                        placeholder="Enter family member names"
-                        className={validationErrors.family_members ? "error" : ""}
-                      />
-                      {validationErrors.family_members && (
-                        <p className="error-message">{validationErrors.family_members}</p>
+                      <div className="select-wrapper">
+                        <select
+                          id="preferred_attendance"
+                          name="preferred_attendance"
+                          value={formData.preferred_attendance}
+                          onChange={handleChange}
+                          className={
+                            validationErrors.preferred_attendance ? "error" : ""
+                          }
+                        >
+                          <option value="">Select attendance mode</option>
+                          <option value="online">Online</option>
+                          <option value="onsite">Offline</option>
+                        </select>
+                      </div>
+                      {validationErrors.preferred_attendance && (
+                        <p className="error-message">
+                          {validationErrors.preferred_attendance}
+                        </p>
                       )}
                     </div>
                   )}
                 </div>
-
-                <div className="form-group checkbox-group">
-                  <label className="checkbox-container">
-                    <input type="checkbox" name="member" checked={formData.member} onChange={handleChange} />
-                    <span className="checkmark"></span>I am a member of JJRS Foundation
-                  </label>
+                {/* Family Registration Section */}
+                <div className="form-group">
+                  <label>Are you registering for your family?</label>
+                  <div>
+                    <label className="radio-container">
+                      <input
+                        type="radio"
+                        name="family"
+                        value="true"
+                        checked={formData.family === true}
+                        onChange={handleChange}
+                      />
+                      Yes
+                    </label>
+                    <label className="radio-container">
+                      <input
+                        type="radio"
+                        name="family"
+                        value="false"
+                        checked={formData.family === false}
+                        onChange={handleChange}
+                      />
+                      Just Me Alone
+                    </label>
+                  </div>
                 </div>
-              
+
+                {formData.family && (
+                  <div className="form-group">
+                    <label htmlFor="family_members">
+                      Family Member Names (separate with commas)
+                    </label>
+                    <input
+                      type="text"
+                      id="family_members"
+                      name="family_members"
+                      value={formData.family_members}
+                      onChange={handleChange}
+                      placeholder="Enter family member names"
+                      className={validationErrors.family_members ? "error" : ""}
+                    />
+                    {validationErrors.family_members && (
+                      <p className="error-message">
+                        {validationErrors.family_members}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="form-group checkbox-group">
+                <label className="checkbox-container">
+                  <input
+                    type="checkbox"
+                    name="member"
+                    checked={formData.member}
+                    onChange={handleChange}
+                  />
+                  <span className="checkmark"></span>I am a member of JJRS
+                  Foundation
+                </label>
+              </div>
 
               <div className="form-note">
                 <Heart size={16} className="note-icon" />
-                <p>Thank you for your interest in our event. We look forward to seeing you!</p>
+                <p>
+                  Thank you for your interest in our event. We look forward to
+                  seeing you!
+                </p>
               </div>
 
               <div className="form-actions">
-                <button type="button" onClick={() => navigate(`/event/${unique_id}`)} className="cancel-button">
+                <button
+                  type="button"
+                  onClick={() => navigate(`/event/${unique_id}`)}
+                  className="cancel-button"
+                >
                   Cancel
                 </button>
-                <button type="submit" className="submit-button" disabled={registrationLoading}>
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={registrationLoading}
+                >
                   {registrationLoading ? (
                     <>
                       <Loader2 size={18} className="spinner-icon" />
@@ -444,7 +498,7 @@ const EventRegistration = () => {
         </>
       )}
     </div>
-  )
+  );
 }
 
 export default EventRegistration

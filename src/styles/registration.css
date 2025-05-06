@@ -282,6 +282,14 @@ label {
   transform: translateY(-50%);
   color: var(--primary-light);
   opacity: 0.6;
+  margin-right: 15px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 5px;
 }
 
 input[type="text"],
@@ -307,12 +315,6 @@ select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(68, 39, 119, 0.1);
-}
-
-input[type="text"]::placeholder,
-input[type="email"]::placeholder,
-select::placeholder {
-  padding-left: 20px;
 }
 
 input.error,
@@ -345,6 +347,10 @@ select.error {
   border-right: 6px solid transparent;
   border-top: 6px solid var(--primary-color);
   pointer-events: none;
+}
+
+.register-input {
+  padding-left: 45px !important;
 }
 
 select {
