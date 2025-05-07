@@ -300,7 +300,7 @@ const EventRegistration = () => {
                         value={formData.whatsapp}
                         onChange={handleChange}
                         className="register-input"
-                        placeholder="(+234) WhatsApp number "
+                        placeholder="E.g +2347035524042"
                       />
                     </div>
                   </div>
@@ -316,7 +316,7 @@ const EventRegistration = () => {
                         value={formData.phone}
                         onChange={handleChange}
                         className="register-input"
-                        placeholder="(+234) Phone number"
+                        placeholder="E.g +2347035524042"
                       />
                     </div>
                     <div className="checkbox-row">
