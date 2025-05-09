@@ -67,7 +67,7 @@ const Admit = () => {
           setCountdown("EVENT IS LIVE TODAY!")
         } else if (now > end) {
           setEventStatus("completed")
-          setCountdown("WATCH EVENT")
+          setCountdown("REWATCH EVENT")
         }
       }, 1000)
 
