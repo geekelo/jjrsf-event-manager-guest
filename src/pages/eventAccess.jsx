@@ -26,6 +26,7 @@ const GuestEventAccess = () => {
   const accessModes = ["otp", "email", "name", "phone"]
 
   
+const [singleInput, setSingleInput] = useState("")   // for email, name, phone
   const [accessMode, setAccessMode] = useState("otp")
   const [input, setInput] = useState(["", "", "", "", "", ""])
   const [formError, setFormError] = useState("")
@@ -131,6 +132,119 @@ const GuestEventAccess = () => {
     }
   }, [attendeeError]);
 
+
+// 2. Handle toggling modes
+const toggleToMode = (mode) => {
+  setAccessMode(mode)
+  setFormError("")
+}
+
+// 3. Render all <p> toggle options
+const renderModeOptions = () => {
+  const modes = [
+    { key: "otp", label: "Use 6-digit OTP", icon: <Key size={14} /> },
+    { key: "email", label: "Use email instead", icon: <Mail size={14} /> },
+    { key: "name", label: "Use name instead", icon: <User size={14} /> },
+    { key: "phone", label: "Use phone number instead", icon: <Phone size={14} /> },
+  ]
+
+  return (
+    <div className="mode-options">
+      {modes.map((mode) => (
+        <p
+          key={mode.key}
+          onClick={() => toggleToMode(mode.key)}
+          className={accessMode === mode.key ? "active-mode" : ""}
+          style={{ cursor: "pointer", marginBottom: "8px" }}
+        >
+          {mode.icon}
+          <span style={{ marginLeft: "5px" }}>{mode.label}</span>
+        </p>
+      ))}
+    </div>
+  )
+}
+
+const getInputLabel = () => {
+  switch (accessMode) {
+    case "otp":
+      return "Enter 6-digit OTP"
+    case "email":
+      return "Enter your Email Address"
+    case "name":
+      return "Enter your Full Name"
+    case "phone":
+      return "Enter your Phone Number"
+    default:
+      return ""
+  }
+}
+
+
+// 4. Render the selected input
+const renderSelectedInput = () => {
+  if (accessMode === "otp") {
+    return (
+      <div className="otp-input-container">
+        {input.map((char, idx) => (
+          <input
+            key={idx}
+            type="text"
+            maxLength="1"
+            value={char}
+            onChange={(e) => {
+              const newInput = [...input]
+              newInput[idx] = e.target.value
+              setInput(newInput)
+
+              if (e.target.value && idx < 5) {
+                const nextInput = e.target.nextElementSibling
+                if (nextInput) {
+                  nextInput.focus()
+                }
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Backspace" && !char && idx > 0) {
+                const prevInput = e.target.previousElementSibling
+                if (prevInput) {
+                  prevInput.focus()
+                }
+              }
+            }}
+            className="otp-input"
+          />
+        ))}
+      </div>
+    )
+  }
+
+  let type = "text"
+  let placeholder = ""
+  if (accessMode === "email") {
+    type = "email"
+    placeholder = "Enter your email address"
+  } else if (accessMode === "name") {
+    placeholder = "Enter your full name"
+  } else if (accessMode === "phone") {
+    type = "tel"
+    placeholder = "Enter your phone number"
+  }
+  
+  return (
+    <input
+      type={type}
+      value={singleInput}
+      inputMode={accessMode === "phone" ? "numeric" : undefined}
+      onChange={(e) => {
+        const val = accessMode === "phone" ? e.target.value.replace(/\D/g, "") : e.target.value
+        setSingleInput(val)
+      }}
+      className="access-input"
+      placeholder={placeholder}
+    />
+  )
+}
   const toggleMode = () => {
     const currentIndex = accessModes.indexOf(accessMode)
     const nextMode = accessModes[(currentIndex + 1) % accessModes.length]
@@ -449,71 +563,15 @@ const GuestEventAccess = () => {
                   ? "Join Live Now"
                   : "Watch Recording"}
             </h3>
-            <label>{accessMode === "otp" ? "Enter 6-digit OTP" : "Enter your Email"}</label>
+          
+            <label>{getInputLabel()}</label>
+            {renderSelectedInput()}
 
-            {accessMode === "otp" && (
-  <div className="otp-input-container">
-    {input.map((char, idx) => (
-      <input
-        key={idx}
-        type="text"
-        maxLength="1"
-        value={char}
-        onChange={(e) => {
-          const newInput = [...input]
-          newInput[idx] = e.target.value
-          setInput(newInput)
 
-          if (e.target.value && idx < 5) {
-            const nextInput = e.target.nextElementSibling
-            if (nextInput) {
-              nextInput.focus()
-            }
-          }
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Backspace" && !char && idx > 0) {
-            const prevInput = e.target.previousElementSibling
-            if (prevInput) {
-              prevInput.focus()
-            }
-          }
-        }}
-        className="otp-input"
-      />
-    ))}
-  </div>
-)}
 
-{accessMode === "email" && (
-  <input
-    type="email"
-    value={input.join("")}
-    onChange={(e) => setInput([e.target.value])}
-    className="access-input"
-    placeholder="Enter your email address"
-  />
-)}
+          
 
-{accessMode === "name" && (
-  <input
-    type="text"
-    value={input.join("")}
-    onChange={(e) => setInput([e.target.value])}
-    className="access-input"
-    placeholder="Enter your full name"
-  />
-)}
-
-{accessMode === "phone" && (
-  <input
-    type="tel"
-    value={input.join("")}
-    onChange={(e) => setInput([e.target.value.replace(/\D/g, "")])}  // allow only digits
-    className="access-input"
-    placeholder="Enter your phone number"
-  />
-)}
+          
 
 {formError && (
   <p className="error-msg">
@@ -522,8 +580,8 @@ const GuestEventAccess = () => {
   </p>
 )}
 
-
-            <button
+{renderModeOptions()}
+<button
               onClick={handleValidation}
               className="watch-btn"
               disabled={attendeeLoading}
@@ -542,29 +600,6 @@ const GuestEventAccess = () => {
               )}
             </button>
 
-            <p onClick={toggleMode} className="toggle-mode">
-  {accessMode === "otp" ? (
-    <>
-      <Mail size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-      Forgot your OTP? Use email instead
-    </>
-  ) : accessMode === "email" ? (
-    <>
-      <Key size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-      Use 6-digit OTP instead
-    </>
-  ) : accessMode === "name" ? (
-    <>
-      <Phone size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-      Use phone number instead
-    </>
-  ) : (
-    <>
-      <User size={14} style={{ marginRight: "5px", verticalAlign: "middle" }} />
-      Use name instead
-    </>
-  )}
-</p>
 
           </div>
         )}
