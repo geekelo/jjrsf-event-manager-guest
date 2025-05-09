@@ -217,6 +217,12 @@
   border: 1px solid rgba(68, 39, 119, 0.1);
   transition: all 0.3s ease;
 }
+.access-input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+ 
+}
 
 .countdown-container.ongoing {
   background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);

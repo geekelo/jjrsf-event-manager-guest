@@ -235,6 +235,7 @@ const renderSelectedInput = () => {
     <input
       type={type}
       value={singleInput}
+      inputMode={accessMode === "phone" ? "numeric" : undefined}
       onChange={(e) => {
         const val = accessMode === "phone" ? e.target.value.replace(/\D/g, "") : e.target.value
         setSingleInput(val)
