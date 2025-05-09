@@ -65,7 +65,14 @@ const Admit = () => {
         } else if (now >= start && now <= end) {
           setEventStatus("ongoing")
           setCountdown("EVENT IS LIVE TODAY!")
-        } else {
+        } else if (now == end) {
+          setEventStatus("ongoing")
+          setCountdown("EVENT IS LIVE TODAY!")
+        } else if (now > end) {
+          setEventStatus("completed")
+          setCountdown("REWATCH EVENT")
+        }
+        else {
           setEventStatus("completed")
           setCountdown("REWATCH EVENT")
         }
