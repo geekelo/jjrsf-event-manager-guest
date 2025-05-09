@@ -168,7 +168,7 @@ const EventRegistration = () => {
       <div className="registration-closed">
         <div className="registration-closed-content">
           <X size={50} className="closed-icon" />
-          <h2>Registration Closed</h2>
+          <h2>Early-bird Registration Closed</h2>
           <p>The registration period for this event has ended.</p>
           <button onClick={() => navigate(`/event/${unique_id}`)} className="back-button">
             Back to Event

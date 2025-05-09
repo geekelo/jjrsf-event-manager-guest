@@ -416,7 +416,7 @@ const GuestEventAccess = () => {
         </div>
 
         {isRegistrationClosed ? (
-          <p className="event-status closed">Registration Closed</p>
+          <p className="event-status closed">Early-bird Registration Closed</p>
         ) : (
           <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
             Register Now

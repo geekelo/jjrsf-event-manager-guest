@@ -217,7 +217,7 @@ const Admit = () => {
         </div>
 
         {isRegistrationClosed ? (
-          <p className="event-status closed">Registration Closed</p>
+          <p className="event-status closed">Early-bird Registration Closed</p>
         ) : (
           <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
             Register Now
@@ -236,7 +236,7 @@ const Admit = () => {
               <Users size={18} />
               Quick Registration
             </button>
-            <p className="quick-reg-note">Already at the event? Register quickly with minimal information.</p>
+            <p className="quick-reg-note">Not yet Registered? Register quickly with minimal information.</p>
           </div>
         )}
 
