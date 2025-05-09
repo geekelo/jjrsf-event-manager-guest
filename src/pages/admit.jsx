@@ -6,7 +6,20 @@ import { useDispatch, useSelector } from "react-redux"
 import "../styles/access.css"
 import { fetchSingleEvent } from "../redux/slices/eventSlice"
 import { markAttendee, resetAttendanceStatus } from "../redux/slices/attendeeSlice"
-import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users, X, CheckCircle } from "lucide-react"
+import {
+  CalendarDays,
+  AlertCircle,
+  Mail,
+  Key,
+  Eye,
+  MapPin,
+  Tag,
+  Calendar,
+  Users,
+  X,
+  CheckCircle,
+  Clock,
+} from "lucide-react"
 import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
 
 const Admit = () => {
@@ -17,7 +30,12 @@ const Admit = () => {
   // Destructure state from useSelector
   const { singleEvent: event, loading, error } = useSelector((state) => state.events)
   // Add attendee state from reducer
-  const { loading: attendeeLoading, error: attendeeError, success: attendeeSuccess, attendeeData } = useSelector((state) => state.attendee)
+  const {
+    loading: attendeeLoading,
+    error: attendeeError,
+    success: attendeeSuccess,
+    attendeeData,
+  } = useSelector((state) => state.attendee)
 
   const [accessMode, setAccessMode] = useState("otp")
   const [input, setInput] = useState(["", "", "", "", "", ""]) // Updated to 6 digits
@@ -91,19 +109,19 @@ const Admit = () => {
 
       // Convert OTP to lowercase before sending
       const accessValue = accessMode === "otp" ? input.join("").toLowerCase() : input.join("")
-      
+
       // Create payload based on access mode
       const payload = {
         event_id: event.id,
-        mode: "offline" // Using offline mode for admit page
+        mode: "offline", // Using offline mode for admit page
       }
-      
+
       if (accessMode === "otp") {
         payload.otp = accessValue
       } else {
         payload.email = accessValue
       }
-      
+
       // Dispatch the markAttendee action
       dispatch(markAttendee(payload))
     }
@@ -144,12 +162,9 @@ const Admit = () => {
     )
   }
 
-  const isRegistrationClosed = new Date() > new Date(event.registration_deadline)
-  const isEventPastOrOngoing = new Date() >= new Date(event.start_date)
-  const showAttend =
-    new Date(event.start_date).toDateString() === new Date().toDateString() ||
-    eventStatus === "ongoing" ||
-    eventStatus === "completed"
+  const isRegistrationClosed = event.registration_deadline_status === "closed"
+  const isEventPastOrOngoing = event.event_status === "ongoing" || event.event_status === "completed"
+  const showAttend = event.event_status === "ongoing" || event.event_status === "completed"
 
   // Determine event type tag
   let eventTypeTag = ""
@@ -159,6 +174,13 @@ const Admit = () => {
     eventTypeTag = "Online"
   } else if (event.onsite) {
     eventTypeTag = "Onsite"
+  }
+
+  // Add formatTime function after the component declaration
+  const formatTime = (timeString) => {
+    if (!timeString) return "N/A"
+    const options = { hour: "2-digit", minute: "2-digit", hour12: true }
+    return new Date(timeString).toLocaleTimeString("en-US", options)
   }
 
   return (
@@ -172,6 +194,12 @@ const Admit = () => {
           month: "long",
           day: "numeric",
         })}
+        {event.start_time && (
+          <span className="event-time">
+            <Clock size={18} style={{ marginLeft: "15px", marginRight: "5px" }} />
+            {formatTime(event.start_time)} - {formatTime(event.end_time)}
+          </span>
+        )}
       </p>
 
       <div className="event-card">
@@ -211,6 +239,7 @@ const Admit = () => {
                   month: "long",
                   day: "numeric",
                 })}
+                {event.registration_deadline_time && <span> at {formatTime(event.registration_deadline_time)}</span>}
               </span>
             </div>
           </div>
@@ -224,10 +253,8 @@ const Admit = () => {
           </button>
         )}
 
-        <div className={`countdown-container ongoing`}>
-          <p className="countdown">
-            Admit Guest
-          </p>
+        <div className={`countdown-container ${event.event_status}`}>
+          <p className="countdown">Admit Guest</p>
         </div>
 
         {isEventPastOrOngoing && (
@@ -305,17 +332,17 @@ const Admit = () => {
               </p>
             )}
 
-            <button 
-              onClick={handleValidation} 
-              className="watch-btn"
-              disabled={attendeeLoading}
-            >
+            <button onClick={handleValidation} className="watch-btn" disabled={attendeeLoading}>
               {attendeeLoading ? (
                 <span>Processing...</span>
               ) : (
                 <>
                   <Eye size={18} style={{ marginRight: "8px" }} />
-                  {eventStatus === "upcoming" ? "Admit Guest" : eventStatus === "ongoing" ? "Admit Guest" : "Admit Guest"}
+                  {eventStatus === "upcoming"
+                    ? "Admit Guest"
+                    : eventStatus === "ongoing"
+                      ? "Admit Guest"
+                      : "Admit Guest"}
                 </>
               )}
             </button>
@@ -340,40 +367,36 @@ const Admit = () => {
       {/* Success/Error Modal */}
       {showResultModal && (
         <div className="result-modal-overlay">
-          <div className={`result-modal ${attendeeSuccess ? 'success' : 'error'}`}>
+          <div className={`result-modal ${attendeeSuccess ? "success" : "error"}`}>
             <button className="close-modal" onClick={closeResultModal}>
               <X size={24} />
             </button>
-            
+
             <div className="modal-icon">
-              {attendeeSuccess ? (
-                <CheckCircle size={50} color="#4CAF50" />
-              ) : (
-                <AlertCircle size={50} color="#F44336" />
-              )}
+              {attendeeSuccess ? <CheckCircle size={50} color="#4CAF50" /> : <AlertCircle size={50} color="#F44336" />}
             </div>
-            
-            <h3 className="modal-title">
-              {attendeeSuccess ? "Success" : "Error"}
-            </h3>
-            
+
+            <h3 className="modal-title">{attendeeSuccess ? "Success" : "Error"}</h3>
+
             <p className="modal-message">
-              {attendeeSuccess 
-                ? `${attendeeData?.attendee?.name || 'Guest'} has been successfully marked as attended. Kindly admit and grant access.`
-                : `The OTP or Email entered was unrecognized. Please retry or Quick Register the guest to receive an OTP.`
-              }
+              {attendeeSuccess
+                ? `${attendeeData?.attendee?.name || "Guest"} has been successfully marked as attended. Kindly admit and grant access.`
+                : `The OTP or Email entered was unrecognized. Please retry or Quick Register the guest to receive an OTP.`}
             </p>
-            
+
             {!attendeeSuccess && (
-              <button className="quick-register-modal-btn" onClick={() => {
-                closeResultModal();
-                handleQuickRegistration();
-              }}>
+              <button
+                className="quick-register-modal-btn"
+                onClick={() => {
+                  closeResultModal()
+                  handleQuickRegistration()
+                }}
+              >
                 <Users size={18} style={{ marginRight: "8px" }} />
                 Quick Register Guest
               </button>
             )}
-            
+
             <button className="close-modal-btn" onClick={closeResultModal}>
               Close
             </button>
