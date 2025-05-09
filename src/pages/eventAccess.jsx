@@ -436,7 +436,7 @@ const GuestEventAccess = () => {
               <Users size={18} />
               Quick Registration
             </button>
-            <p className="quick-reg-note">Already at the event? Register quickly with minimal information.</p>
+            <p className="quick-reg-note">Not yet Registered? Register quickly with minimal information.</p>
           </div>
         )}
 
