@@ -8,27 +8,7 @@ import "../styles/streamView.css"
 import { fetchSingleEvent } from "../redux/slices/eventSlice"
 import { markAttendee } from "../redux/slices/attendeeSlice"
 import { fetchStreamingPlatforms, clearStreams } from "../redux/slices/streamSlice"
-import {
-  CalendarDays,
-  Clock,
-  AlertCircle,
-  Mail,
-  Key,
-  Eye,
-  MapPin,
-  Tag,
-  Calendar,
-  Users,
-  FilmIcon,
-  ChevronDown,
-  ChevronUp,
-  Globe,
-  Youtube,
-  Mic,
-  Video,
-  User,
-  Phone,
-} from "lucide-react"
+import { CalendarDays, Clock, AlertCircle, Mail, Key, Eye, MapPin, Tag, Calendar, Users, FilmIcon, ChevronDown, ChevronUp, Globe, Youtube, Mic, Video, Copy, Check, Code, User, Phone } from "lucide-react"
 import QuickRegistrationForm from "../components/forms/QuickRegistrationForm"
 import FloatingFeedbackButton from "../components/forms/FloatingFeadbackButton"
 import StreamComponent from "../components/StreamComponent"
@@ -42,14 +22,11 @@ const GuestEventAccess = () => {
   // Destructure state from useSelector
   const { singleEvent: event, loading: eventLoading, error: eventError } = useSelector((state) => state.events)
   const { platforms, loading: streamsLoading, error: streamsError } = useSelector((state) => state.streams)
-  const {
-    loading: attendeeLoading,
-    error: attendeeError,
-    success: attendeeSuccess,
-  } = useSelector((state) => state.attendee)
+  const { loading: attendeeLoading, error: attendeeError, success: attendeeSuccess } = useSelector((state) => state.attendee)
   const accessModes = ["otp", "email", "name", "phone"]
 
-  const [singleInput, setSingleInput] = useState("") // for email, name, phone
+  
+const [singleInput, setSingleInput] = useState("")   // for email, name, phone
   const [accessMode, setAccessMode] = useState("otp")
   const [input, setInput] = useState(["", "", "", "", "", ""])
   const [formError, setFormError] = useState("")
@@ -109,21 +86,19 @@ const GuestEventAccess = () => {
       dispatch(fetchStreamingPlatforms(event.id))
       setShowStream(true)
     }
-  }, [attendeeSuccess, dispatch, event])
+  }, [attendeeSuccess, dispatch, event]) 
 
   useEffect(() => {
     if (event) {
       const interval = setInterval(() => {
-        // Use the event status from the backend
-        setEventStatus(event.event_status)
-
-        // Calculate countdown based on event dates
         const now = new Date()
         const start = new Date(event.start_date)
         const end = new Date(event.end_date)
         const timeLeft = start - now
 
-        if (event.event_status === "upcoming") {
+        // Determine event status
+        if (now < start) {
+          setEventStatus("upcoming")
           // Calculate countdown for upcoming events
           const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
           const hrs = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
@@ -135,9 +110,11 @@ const GuestEventAccess = () => {
           } else {
             setCountdown(`${hrs}h ${mins}m ${secs}s`)
           }
-        } else if (event.event_status === "ongoing") {
+        } else if (now >= start && now <= end) {
+          setEventStatus("ongoing")
           setCountdown("EVENT IS LIVE TODAY!")
-        } else if (event.event_status === "completed") {
+        } else if (now > end) {
+          setEventStatus("completed")
           setCountdown("REWATCH EVENT")
         }
       }, 1000)
@@ -149,123 +126,125 @@ const GuestEventAccess = () => {
   // 1. Add a useEffect to show backend errors as feedback and reset loading state
   useEffect(() => {
     if (attendeeError) {
-      setFormError(attendeeError || "Invalid OTP or Email. Please try again.")
+      setFormError(attendeeError || "Invalid OTP or Email. Please try again.");
       // Optionally reset input if you want
       // setInput(accessMode === "otp" ? ["", "", "", "", "", ""] : [""]);
     }
-  }, [attendeeError])
+  }, [attendeeError]);
 
-  // 2. Handle toggling modes
-  const toggleToMode = (mode) => {
-    setAccessMode(mode)
-    setFormError("")
+
+// 2. Handle toggling modes
+const toggleToMode = (mode) => {
+  setAccessMode(mode)
+  setFormError("")
+}
+
+// 3. Render all <p> toggle options
+const renderModeOptions = () => {
+  const modes = [
+    { key: "otp", label: "Use 6-digit OTP", icon: <Key size={14} /> },
+    { key: "email", label: "Use email instead", icon: <Mail size={14} /> },
+    { key: "name", label: "Use name instead", icon: <User size={14} /> },
+    { key: "phone", label: "Use phone number instead", icon: <Phone size={14} /> },
+  ]
+
+  return (
+    <div className="mode-options">
+      {modes.map((mode) => (
+        <p
+          key={mode.key}
+          onClick={() => toggleToMode(mode.key)}
+          className={accessMode === mode.key ? "active-mode" : ""}
+          style={{ cursor: "pointer", marginBottom: "8px" }}
+        >
+          {mode.icon}
+          <span style={{ marginLeft: "5px" }}>{mode.label}</span>
+        </p>
+      ))}
+    </div>
+  )
+}
+
+const getInputLabel = () => {
+  switch (accessMode) {
+    case "otp":
+      return "Enter 6-digit OTP"
+    case "email":
+      return "Enter your Email Address"
+    case "name":
+      return "Enter your Full Name"
+    case "phone":
+      return "Enter your Phone Number"
+    default:
+      return ""
   }
+}
 
-  // 3. Render all <p> toggle options
-  const renderModeOptions = () => {
-    const modes = [
-      { key: "otp", label: "Use 6-digit OTP", icon: <Key size={14} /> },
-      { key: "email", label: "Use email instead", icon: <Mail size={14} /> },
-      { key: "name", label: "Use name instead", icon: <User size={14} /> },
-      { key: "phone", label: "Use phone number instead", icon: <Phone size={14} /> },
-    ]
 
+// 4. Render the selected input
+const renderSelectedInput = () => {
+  if (accessMode === "otp") {
     return (
-      <div className="mode-options">
-        {modes.map((mode) => (
-          <p
-            key={mode.key}
-            onClick={() => toggleToMode(mode.key)}
-            className={accessMode === mode.key ? "active-mode" : ""}
-            style={{ cursor: "pointer", marginBottom: "8px" }}
-          >
-            {mode.icon}
-            <span style={{ marginLeft: "5px" }}>{mode.label}</span>
-          </p>
+      <div className="otp-input-container">
+        {input.map((char, idx) => (
+          <input
+            key={idx}
+            type="text"
+            maxLength="1"
+            value={char}
+            onChange={(e) => {
+              const newInput = [...input]
+              newInput[idx] = e.target.value
+              setInput(newInput)
+
+              if (e.target.value && idx < 5) {
+                const nextInput = e.target.nextElementSibling
+                if (nextInput) {
+                  nextInput.focus()
+                }
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Backspace" && !char && idx > 0) {
+                const prevInput = e.target.previousElementSibling
+                if (prevInput) {
+                  prevInput.focus()
+                }
+              }
+            }}
+            className="otp-input"
+          />
         ))}
       </div>
     )
   }
 
-  const getInputLabel = () => {
-    switch (accessMode) {
-      case "otp":
-        return "Enter 6-digit OTP"
-      case "email":
-        return "Enter your Email Address"
-      case "name":
-        return "Enter your Full Name"
-      case "phone":
-        return "Enter your Phone Number"
-      default:
-        return ""
-    }
+  let type = "text"
+  let placeholder = ""
+  if (accessMode === "email") {
+    type = "email"
+    placeholder = "Enter your email address"
+  } else if (accessMode === "name") {
+    placeholder = "Enter your full name"
+  } else if (accessMode === "phone") {
+    type = "tel"
+    placeholder = "Enter your phone number"
   }
-
-  // 4. Render the selected input
-  const renderSelectedInput = () => {
-    if (accessMode === "otp") {
-      return (
-        <div className="otp-input-container">
-          {input.map((char, idx) => (
-            <input
-              key={idx}
-              type="text"
-              maxLength="1"
-              value={char}
-              onChange={(e) => {
-                const newInput = [...input]
-                newInput[idx] = e.target.value
-                setInput(newInput)
-
-                if (e.target.value && idx < 5) {
-                  const nextInput = e.target.nextElementSibling
-                  if (nextInput) {
-                    nextInput.focus()
-                  }
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Backspace" && !char && idx > 0) {
-                  const prevInput = e.target.previousElementSibling
-                  if (prevInput) {
-                    prevInput.focus()
-                  }
-                }
-              }}
-              className="otp-input"
-            />
-          ))}
-        </div>
-      )
-    }
-
-    let type = "text"
-    let placeholder = ""
-    if (accessMode === "email") {
-      type = "email"
-      placeholder = "Enter your email address"
-    } else if (accessMode === "name") {
-      placeholder = "Enter your full name"
-    } else if (accessMode === "phone") {
-      type = "tel"
-      placeholder = "Enter your phone number"
-    }
-
-    return (
-      <input
-        type={type}
-        value={singleInput}
-        inputMode={accessMode === "phone" ? "numeric" : undefined}
-        onChange={(e) => {
-          const val = accessMode === "phone" ? e.target.value.replace(/\D/g, "") : e.target.value
-          setSingleInput(val)
-        }}
-        className="access-input"
-        placeholder={placeholder}
-      />
-    )
-  }
+  
+  return (
+    <input
+      type={type}
+      value={singleInput}
+      inputMode={accessMode === "phone" ? "numeric" : undefined}
+      onChange={(e) => {
+        const val = accessMode === "phone" ? e.target.value.replace(/\D/g, "") : e.target.value
+        setSingleInput(val)
+      }}
+      className="access-input"
+      placeholder={placeholder}
+    />
+  )
+}
   const toggleMode = () => {
     const currentIndex = accessModes.indexOf(accessMode)
     const nextMode = accessModes[(currentIndex + 1) % accessModes.length]
@@ -275,7 +254,7 @@ const GuestEventAccess = () => {
   }
   const handleValidation = () => {
     const value = input.join("").trim()
-
+  
     if (accessMode === "otp") {
       if (value.length !== 6) {
         setFormError("Please enter a valid 6-digit OTP.")
@@ -292,21 +271,20 @@ const GuestEventAccess = () => {
         return
       }
     } else if (accessMode === "phone") {
-      if (!/^\d{7,15}$/.test(value)) {
-        // Simple phone validation (7 to 15 digits)
+      if (!/^\d{7,15}$/.test(value)) {  // Simple phone validation (7 to 15 digits)
         setFormError("Please enter a valid phone number.")
         return
       }
     }
-
+  
     setFormError("")
     const accessValue = value.toLowerCase()
-
+  
     const payload = {
       event_id: event.id,
       mode: "online",
     }
-
+  
     if (accessMode === "otp") {
       payload.otp = accessValue
     } else if (accessMode === "email") {
@@ -316,9 +294,10 @@ const GuestEventAccess = () => {
     } else if (accessMode === "phone") {
       payload.phone = accessValue
     }
-
+  
     dispatch(markAttendee(payload))
   }
+  
 
   const handleQuickRegistration = () => {
     setShowQuickRegistration(true)
@@ -476,28 +455,12 @@ const GuestEventAccess = () => {
     )
   }
 
-  // Add formatTime function after the component declaration
-  const formatTime = (timeString) => {
-    if (!timeString) return "N/A"
-    const options = { hour: "2-digit", minute: "2-digit", hour12: true }
-    return new Date(timeString).toLocaleTimeString("en-US", options)
-  }
-
-  // Update the isRegistrationClosed check to use the backend status
-  // Replace:
-  // const isRegistrationClosed = new Date() > new Date(event.registration_deadline)
-  // With:
-  const isRegistrationClosed = event.registration_deadline_status === "closed"
-
-  // Update the isEventPastOrOngoing check to use the backend status
-  // Replace:
-  // const isEventPastOrOngoing = new Date() >= new Date(event.start_date)
-  // With:
-  const isEventPastOrOngoing = event.event_status === "ongoing" || event.event_status === "completed"
-
-  // Update the showAttend check to use the backend status
-  // Replace the existing showAttend logic with:
-  const showAttend = event.event_status === "ongoing" || event.event_status === "completed"
+  const isRegistrationClosed = new Date() > new Date(event.registration_deadline)
+  const isEventPastOrOngoing = new Date() >= new Date(event.start_date)
+  const showAttend =
+    new Date(event.start_date).toDateString() === new Date().toDateString() ||
+    eventStatus === "ongoing" ||
+    eventStatus === "completed"
 
   // Determine event type tag
   let eventTypeTag = ""
@@ -513,139 +476,134 @@ const GuestEventAccess = () => {
     <div className="event-access-wrapper">
       {!hasAccess ? (
         <>
-          <h1 className="event-title">{event.name}</h1>
-          {/* Update the event date display to include time */}
-          {/* Find the event-date paragraph and update it to: */}
-          <p className="event-date">
-            <CalendarDays size={18} />
-            {new Date(event.start_date).toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-            {event.start_time && (
-              <span className="event-time">
-                <Clock size={18} style={{ marginLeft: "15px", marginRight: "5px" }} />
-                {formatTime(event.start_time)} - {formatTime(event.end_time)}
-              </span>
-            )}
-          </p>
+      <h1 className="event-title">{event.name}</h1>
+      <p className="event-date">
+        <CalendarDays size={18} />
+        {new Date(event.start_date).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </p>
 
-          <div className="event-card">
-            {event.image_url && (
-              <div className="event-image-container">
-                <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
-              </div>
-            )}
-
-            <div className="event-type-tag">
-              <Tag size={16} />
-              <span>{eventTypeTag}</span>
-            </div>
-
-            <div className="event-details-section">
-              {event.description && (
-                <div className="event-description">
-                  <h3>About This Event</h3>
-                  <p>{event.description}</p>
-                </div>
-              )}
-
-              <div className="event-meta-info">
-                {event.location && (
-                  <div className="meta-detail">
-                    <MapPin size={18} />
-                    <span>Location: {event.location}</span>
-                  </div>
-                )}
-
-                {/* Update the registration deadline display in the meta-detail section */}
-                {/* Find the meta-detail with Calendar icon and update it to: */}
-                <div className="meta-detail">
-                  <Calendar size={18} />
-                  <span>
-                    Registration Deadline:{" "}
-                    {new Date(event.registration_deadline).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                    {event.registration_deadline_time && (
-                      <span> at {formatTime(event.registration_deadline_time)}</span>
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {isRegistrationClosed ? (
-              <p className="event-status closed">Early-bird Registration Closed</p>
-            ) : (
-              <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
-                Register Now
-              </button>
-            )}
-
-            {/* Update the countdown container class to use the backend status */}
-            {/* Replace: */}
-            {/* <div className={`countdown-container ${eventStatus}`}> */}
-            {/* With: */}
-            <div className={`countdown-container ${event.event_status}`}>
-              <p className="countdown">
-                <Clock size={24} />
-                {countdown}
-              </p>
-            </div>
-
-            {isEventPastOrOngoing && (
-              <div className="quick-registration-section">
-                <button onClick={handleQuickRegistration} className="quick-register-btn">
-                  <Users size={18} />
-                  Quick Registration
-                </button>
-                <p className="quick-reg-note">Not yet Registered? Register quickly with minimal information.</p>
-              </div>
-            )}
-
-            {showAttend && (
-              <div className="access-section">
-                <h3>
-                  {eventStatus === "upcoming"
-                    ? "Attend Online"
-                    : eventStatus === "ongoing"
-                      ? "Join Live Now"
-                      : "Watch Recording"}
-                </h3>
-
-                <label>{getInputLabel()}</label>
-                {renderSelectedInput()}
-
-                {formError && (
-                  <p className="error-msg">
-                    <AlertCircle size={16} style={{ marginRight: "8px" }} />
-                    {formError}
-                  </p>
-                )}
-
-                {renderModeOptions()}
-                <button onClick={handleValidation} className="watch-btn" disabled={attendeeLoading}>
-                  {attendeeLoading ? (
-                    <span>Processing...</span>
-                  ) : (
-                    <>
-                      <Eye size={18} style={{ marginRight: "8px" }} />
-                      {eventStatus === "upcoming"
-                        ? "Watch Event"
-                        : eventStatus === "ongoing"
-                          ? "Join Live"
-                          : "Watch Recording"}
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
+      <div className="event-card">
+        {event.image_url && (
+          <div className="event-image-container">
+            <img src={event.image_url || "/featured.jpeg"} alt={event.name} className="event-image" />
           </div>
+        )}
+
+        <div className="event-type-tag">
+          <Tag size={16} />
+          <span>{eventTypeTag}</span>
+        </div>
+
+        <div className="event-details-section">
+          {event.description && (
+            <div className="event-description">
+              <h3>About This Event</h3>
+              <p>{event.description}</p>
+            </div>
+          )}
+
+          <div className="event-meta-info">
+            {event.location && (
+              <div className="meta-detail">
+                <MapPin size={18} />
+                <span>Location: {event.location}</span>
+              </div>
+            )}
+
+            <div className="meta-detail">
+              <Calendar size={18} />
+              <span>
+                Registration Deadline:{" "}
+                {new Date(event.registration_deadline).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {isRegistrationClosed ? (
+          <p className="event-status closed">Early-bird Registration Closed</p>
+        ) : (
+          <button className="register-btn" onClick={() => navigate(`/event/${unique_id}/register`)}>
+            Register Now
+          </button>
+        )}
+
+        <div className={`countdown-container ${eventStatus}`}>
+          <p className="countdown">
+            <Clock size={24} />
+            {countdown}
+          </p>
+        </div>
+
+        {isEventPastOrOngoing && (
+          <div className="quick-registration-section">
+            <button onClick={handleQuickRegistration} className="quick-register-btn">
+              <Users size={18} />
+              Quick Registration
+            </button>
+            <p className="quick-reg-note">Not yet Registered? Register quickly with minimal information.</p>
+          </div>
+        )}
+
+        {showAttend && (
+          <div className="access-section">
+            <h3>
+              {eventStatus === "upcoming"
+                ? "Attend Online"
+                : eventStatus === "ongoing"
+                  ? "Join Live Now"
+                  : "Watch Recording"}
+            </h3>
+          
+            <label>{getInputLabel()}</label>
+            {renderSelectedInput()}
+
+
+
+          
+
+          
+
+{formError && (
+  <p className="error-msg">
+    <AlertCircle size={16} style={{ marginRight: "8px" }} />
+    {formError}
+  </p>
+)}
+
+{renderModeOptions()}
+<button
+              onClick={handleValidation}
+              className="watch-btn"
+              disabled={attendeeLoading}
+            >
+              {attendeeLoading ? (
+                <span>Processing...</span>
+              ) : (
+                <>
+                  <Eye size={18} style={{ marginRight: "8px" }} />
+                  {eventStatus === "upcoming"
+                    ? "Watch Event"
+                    : eventStatus === "ongoing"
+                    ? "Join Live"
+                    : "Watch Recording"}
+                </>
+              )}
+            </button>
+
+
+          </div>
+        )}
+      </div>
         </>
       ) : (
         <>
@@ -653,21 +611,28 @@ const GuestEventAccess = () => {
           <button
             className="back-button"
             onClick={() => {
-              setShowStream(false)
-              setHasAccess(false)
-              setAccessChecked(false)
-              setFormError("") // Optionally clear error
-              setInput(accessMode === "otp" ? ["", "", "", "", "", ""] : [""])
+              setShowStream(false);
+              setHasAccess(false);
+              setAccessChecked(false);
+              setFormError(""); // Optionally clear error
+              setInput(accessMode === "otp" ? ["", "", "", "", "", ""] : [""]);
             }}
           >
-            ←
+            ← 
           </button>
-          <StreamComponent platforms={platforms} loading={streamsLoading} error={streamsError} eventName={event.name} />
+          <StreamComponent
+            platforms={platforms}
+            loading={streamsLoading}
+            error={streamsError}
+            eventName={event.name}
+          />
           {event && <FloatingFeedbackButton eventId={event.id} />}
         </>
       )}
 
-      {showQuickRegistration && event && <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />}
+      {showQuickRegistration && event && (
+        <QuickRegistrationForm eventId={event.id} onClose={closeQuickRegistration} />
+      )}
     </div>
   )
 }
