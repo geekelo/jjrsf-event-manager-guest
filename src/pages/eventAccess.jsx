@@ -147,7 +147,7 @@ const GuestEventAccess = () => {
         return
       }
     } else if (accessMode === "email") {
-      if (!/\S+@\S+\.\S+/.test(value)) {
+      if (!/\S+@\S+\.\S+/.test(trimmedValue)) {
         setFormError("Please enter a valid email address.")
         return
       }
