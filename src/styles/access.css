@@ -222,7 +222,21 @@
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
- 
+}
+
+/* Update the countdown container styles to handle all event statuses */
+.countdown-container.completed {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(139, 195, 74, 0.1) 100%);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.countdown-container.completed .countdown {
+  color: #4caf50;
+  font-weight: 700;
+}
+
+.countdown-container.completed .countdown svg {
+  color: #4caf50;
 }
 
 .countdown-container.ongoing {
@@ -660,6 +674,13 @@
   box-shadow: 0 12px 30px rgba(255, 154, 97, 0.4);
 }
 
+/* Add styling for the event time display */
+.event-time {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
 .toggle-mode {
   margin-top: 20px;
   font-size: 0.95rem;
@@ -883,11 +904,11 @@
 }
 
 .result-modal.success {
-  border-top: 5px solid #4CAF50;
+  border-top: 5px solid #4caf50;
 }
 
 .result-modal.error {
-  border-top: 5px solid #F44336;
+  border-top: 5px solid #f44336;
 }
 
 .close-modal {
@@ -971,7 +992,7 @@
     max-width: 80%;
     margin: 20px auto;
   }
-  
+
   .otp-input {
     width: 100%;
     height: 45px;

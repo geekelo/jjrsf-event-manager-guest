@@ -8,26 +8,35 @@ const EventsSection = ({ events, loading }) => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("upcoming")
 
+  // Update the formatDate function to include time
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" }
     return new Date(dateString).toLocaleDateString("en-US", options)
   }
 
+  // Add a new function to format time
+  const formatTime = (dateString) => {
+    if (!dateString) return "N/A"
+    const options = { hour: "2-digit", minute: "2-digit", hour12: true }
+    return new Date(dateString).toLocaleTimeString("en-US", options)
+  }
+
   const today = new Date()
 
-  // Filter for upcoming events (end_date is in the future)
+  // Update the filtering logic to use backend status instead of calculating it
+  // Filter events based on the status from backend
   const upcomingEvents = events
-    .filter((event) => new Date(event.start_date) > today)
+    .filter((event) => event.status === "upcoming")
     .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
 
-  // Filter for ongoing events (today is between start_date and end_date)
+  // Filter for ongoing events based on backend status
   const ongoingEvents = events
-    .filter((event) => new Date(event.start_date) <= today && new Date(event.end_date) >= today)
+    .filter((event) => event.status === "ongoing")
     .sort((a, b) => new Date(a.end_date) - new Date(b.end_date))
 
-  // Filter for past events (end_date is in the past)
+  // Filter for past events based on backend status
   const pastEvents = events
-    .filter((event) => new Date(event.end_date) < today)
+    .filter((event) => event.status === "completed")
     .sort((a, b) => new Date(b.end_date) - new Date(a.end_date))
 
   // Determine which events to show based on active tab
@@ -123,6 +132,7 @@ const EventsSection = ({ events, loading }) => {
                     {activeTab === "upcoming" ? "Upcoming" : activeTab === "ongoing" ? "Ongoing" : "Past"}
                   </div>
                   <h3>{event.name}</h3>
+                  {/* Update the event card to display time information */}
                   <div className="premium-event-meta">
                     <div className="meta-item">
                       <div className="meta-icon">
@@ -130,8 +140,16 @@ const EventsSection = ({ events, loading }) => {
                       </div>
                       <span>
                         {event.start_date === event.end_date
-                          ? formatDate(event.start_date)
+                          ? `${formatDate(event.start_date)}`
                           : `${formatDate(event.start_date)} - ${formatDate(event.end_date)}`}
+                      </span>
+                    </div>
+                    <div className="meta-item">
+                      <div className="meta-icon">
+                        <Clock size={14} />
+                      </div>
+                      <span>
+                        {formatTime(event.start_time)} - {formatTime(event.end_time)}
                       </span>
                     </div>
                     {event.location && (

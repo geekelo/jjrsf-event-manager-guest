@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchSingleEvent, registerForEvent, resetRegistration } from "../redux/slices/eventSlice"
-import { CalendarDays, User, MapPin, Mail, Phone, Check, X, Loader2, Heart, ChevronRight } from "lucide-react"
+import { CalendarDays, User, MapPin, Mail, Phone, Check, X, Loader2, Heart, ChevronRight, Clock } from "lucide-react"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import "../styles/registration.css"
@@ -33,7 +33,7 @@ const EventRegistration = () => {
     member: false,
     preferred_attendance: event?.onsite && event?.online ? "" : event?.onsite ? "onsite" : "online",
     family: false,
-    family_members: "", 
+    family_members: "",
   })
 
   // Form validation state
@@ -115,17 +115,15 @@ const EventRegistration = () => {
       return
     }
 
-    const formattedFamilyMembers = formData.family_members
-    .split(",")
-    .map((name) => name.trim())
+    const formattedFamilyMembers = formData.family_members.split(",").map((name) => name.trim())
 
-  dispatch(
-    registerForEvent({
-      eventId: event.id,
-      formData: { ...formData, family_members: formattedFamilyMembers },
-    }),
-  )
-}  
+    dispatch(
+      registerForEvent({
+        eventId: event.id,
+        formData: { ...formData, family_members: formattedFamilyMembers },
+      }),
+    )
+  }
 
   useEffect(() => {
     if (registrationSuccess) {
@@ -161,7 +159,13 @@ const EventRegistration = () => {
     )
   }
 
-  const isRegistrationClosed = new Date() > new Date(event.registration_deadline)
+  const formatTime = (timeString) => {
+    if (!timeString) return "N/A"
+    const options = { hour: "2-digit", minute: "2-digit", hour12: true }
+    return new Date(timeString).toLocaleTimeString("en-US", options)
+  }
+
+  const isRegistrationClosed = event.registration_deadline_status === "closed"
 
   if (isRegistrationClosed) {
     return (
@@ -180,13 +184,7 @@ const EventRegistration = () => {
 
   return (
     <div className="registration-wrapper">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-      />
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick pauseOnHover />
 
       {registrationSuccess ? (
         <div className="registration-success">
@@ -213,6 +211,12 @@ const EventRegistration = () => {
                   month: "long",
                   day: "numeric",
                 })}
+                {event.start_time && (
+                  <span className="event-time">
+                    <Clock size={18} style={{ marginLeft: "15px", marginRight: "5px" }} />
+                    {formatTime(event.start_time)} - {formatTime(event.end_time)}
+                  </span>
+                )}
               </p>
             </div>
           </div>
@@ -241,9 +245,7 @@ const EventRegistration = () => {
                       className={`register-input ${validationErrors.name} ? "error" : ""`}
                     />
                   </div>
-                  {validationErrors.name && (
-                    <p className="error-message">{validationErrors.name}</p>
-                  )}
+                  {validationErrors.name && <p className="error-message">{validationErrors.name}</p>}
                 </div>
 
                 <div className="form-group">
@@ -276,9 +278,7 @@ const EventRegistration = () => {
                       className={`register-input ${validationErrors.email} ? "error" : ""`}
                     />
                   </div>
-                  {validationErrors.email && (
-                    <p className="error-message">{validationErrors.email}</p>
-                  )}
+                  {validationErrors.email && <p className="error-message">{validationErrors.email}</p>}
                 </div>
               </div>
 
@@ -320,20 +320,20 @@ const EventRegistration = () => {
                       />
                     </div>
                     <div className="checkbox-row">
-                    <input
-                      type="checkbox"
-                      id="phone"
-                      name="phone"
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setFormData((prev) => ({
-                            ...prev,
-                            phone: prev.whatsapp,
-                          }));
-                        }
-                      }}
-                    />
-                    <label htmlFor="phone">Same as WhatsApp number</label>
+                      <input
+                        type="checkbox"
+                        id="phone"
+                        name="phone"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              phone: prev.whatsapp,
+                            }))
+                          }
+                        }}
+                      />
+                      <label htmlFor="phone">Same as WhatsApp number</label>
                     </div>
                   </div>
                 </div>
@@ -363,12 +363,10 @@ const EventRegistration = () => {
                         <option value="m">Male</option>
                       </select>
                     </div>
-                    {validationErrors.gender && (
-                      <p className="error-message">{validationErrors.gender}</p>
-                    )}
+                    {validationErrors.gender && <p className="error-message">{validationErrors.gender}</p>}
                   </div>
 
-                  {(event?.onsite && event?.online) && (
+                  {event?.onsite && event?.online && (
                     <div className="form-group">
                       <label htmlFor="preferred_attendance">
                         Preferred Attendance <span className="required">*</span>
@@ -379,9 +377,7 @@ const EventRegistration = () => {
                           name="preferred_attendance"
                           value={formData.preferred_attendance}
                           onChange={handleChange}
-                          className={
-                            validationErrors.preferred_attendance ? "error" : ""
-                          }
+                          className={validationErrors.preferred_attendance ? "error" : ""}
                         >
                           <option value="">Select attendance mode</option>
                           <option value="online">Online</option>
@@ -389,9 +385,7 @@ const EventRegistration = () => {
                         </select>
                       </div>
                       {validationErrors.preferred_attendance && (
-                        <p className="error-message">
-                          {validationErrors.preferred_attendance}
-                        </p>
+                        <p className="error-message">{validationErrors.preferred_attendance}</p>
                       )}
                     </div>
                   )}
@@ -425,9 +419,7 @@ const EventRegistration = () => {
 
                 {formData.family && (
                   <div className="form-group">
-                    <label htmlFor="family_members">
-                      Family Member Names (separate with commas)
-                    </label>
+                    <label htmlFor="family_members">Family Member Names (separate with commas)</label>
                     <input
                       type="text"
                       id="family_members"
@@ -438,9 +430,7 @@ const EventRegistration = () => {
                       className={validationErrors.family_members ? "error" : ""}
                     />
                     {validationErrors.family_members && (
-                      <p className="error-message">
-                        {validationErrors.family_members}
-                      </p>
+                      <p className="error-message">{validationErrors.family_members}</p>
                     )}
                   </div>
                 )}
@@ -448,38 +438,21 @@ const EventRegistration = () => {
 
               <div className="form-group checkbox-group">
                 <label className="checkbox-container">
-                  <input
-                    type="checkbox"
-                    name="member"
-                    checked={formData.member}
-                    onChange={handleChange}
-                  />
-                  <span className="checkmark"></span>I am a member of JJRS
-                  Foundation
+                  <input type="checkbox" name="member" checked={formData.member} onChange={handleChange} />
+                  <span className="checkmark"></span>I am a member of JJRS Foundation
                 </label>
               </div>
 
               <div className="form-note">
                 <Heart size={16} className="note-icon" />
-                <p>
-                  Thank you for your interest in our event. We look forward to
-                  seeing you!
-                </p>
+                <p>Thank you for your interest in our event. We look forward to seeing you!</p>
               </div>
 
               <div className="form-actions">
-                <button
-                  type="button"
-                  onClick={() => navigate(`/event/${unique_id}`)}
-                  className="cancel-button"
-                >
+                <button type="button" onClick={() => navigate(`/event/${unique_id}`)} className="cancel-button">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="submit-button"
-                  disabled={registrationLoading}
-                >
+                <button type="submit" className="submit-button" disabled={registrationLoading}>
                   {registrationLoading ? (
                     <>
                       <Loader2 size={18} className="spinner-icon" />
@@ -498,7 +471,7 @@ const EventRegistration = () => {
         </>
       )}
     </div>
-  );
+  )
 }
 
 export default EventRegistration
