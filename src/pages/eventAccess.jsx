@@ -261,7 +261,7 @@ const renderSelectedInput = () => {
         return
       }
     } else if (accessMode === "email") {
-      if (!/\S+@\S+\.\S+/.test(trimmedValue)) {
+      if (!/\S+@\S+\.\S+/.test(value)) {
         setFormError("Please enter a valid email address.")
         return
       }
