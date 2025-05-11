@@ -130,8 +130,8 @@ const EventsSection = ({ events, loading }) => {
                       </div>
                       <span>
                         {event.start_date === event.end_date
-                          ? formatDate(event.start_date, event.start_time)
-                          : `${formatDate(event.start_date, event.start_time)} - ${formatDate(event.end_date, event.end_time)}`}
+                          ? `${formatDate(event.start_date, event.start_time)} (GMT+1)`
+                          : `${formatDate(event.start_date, event.start_time)} (GMT+1) - ${formatDate(event.end_date, event.end_time)} (GMT+1)`}
                       </span>
                     </div>
                     {event.location && (

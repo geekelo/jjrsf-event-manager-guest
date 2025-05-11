@@ -78,7 +78,7 @@ const Admit = () => {
         const timeLeft = start - now;
 
         // Determine event status
-        if (now < start) {
+        if (event.status === "upcoming") {
           setEventStatus("upcoming");
           // Calculate countdown for upcoming events
           const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
@@ -93,10 +93,10 @@ const Admit = () => {
           } else {
             setCountdown(`${hrs}h ${mins}m ${secs}s`);
           }
-        } else if (now >= start && now <= end) {
+        } else if (event.status === "ongoing") {
           setEventStatus("ongoing");
           setCountdown("EVENT IS LIVE TODAY!");
-        } else if (now > end) {
+        } else if (event.status === "completed") {
           setEventStatus("completed");
           setCountdown("REWATCH EVENT");
         }
@@ -351,7 +351,8 @@ const renderModeOptions = () => {
             minute: "2-digit",
             hour12: false, // Use 24-hour format
           }
-        )}
+        )} 
+        <span>&nbps;(GMT+1)</span>
       </p>
 
       <div className="event-card">
