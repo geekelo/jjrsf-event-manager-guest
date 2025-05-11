@@ -21,6 +21,7 @@ const EventRegistration = () => {
     registrationLoading,
     registrationError,
     registrationSuccess,
+    registeredAttendee,
   } = useSelector((state) => state.events)
   // Form state
   const [formData, setFormData] = useState({
@@ -129,12 +130,12 @@ const EventRegistration = () => {
 
   useEffect(() => {
     if (registrationSuccess) {
-       console.log(registrationSuccess);
+      console.log("Registration successful:", registeredAttendee)
       toast.success(`Successfully registered for ${event.name}! Kindly copy your OTP to accesss event is.`)
       // Redirect after successful registration
       const timer = setTimeout(() => {
         navigate(`/event/${unique_id}`)
-      }, 3000)
+      }, 13000)
 
       return () => clearTimeout(timer)
     }

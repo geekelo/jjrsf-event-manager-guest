@@ -78,6 +78,7 @@ const eventsSlice = createSlice({
     quickRegistrationLoading: false,
     quickRegistrationError: null,
     quickRegistrationSuccess: false,
+    registeredAttendee: {},
   },
   reducers: {
     setFilteredEvents: (state, action) => {
@@ -131,6 +132,7 @@ const eventsSlice = createSlice({
       .addCase(registerForEvent.fulfilled, (state) => {
         state.registrationLoading = false
         state.registrationSuccess = true
+        state.registeredAttendee = action.payload
       })
       .addCase(registerForEvent.rejected, (state, action) => {
         state.registrationLoading = false
