@@ -253,52 +253,52 @@ const renderSelectedInput = () => {
     setFormError("")
   }
   const handleValidation = () => {
-    const value = input.join("").trim()
+    const value = input.join("").trim();
   
     if (accessMode === "otp") {
       if (value.length !== 6) {
-        setFormError("Please enter a valid 6-digit OTP.")
-        return
+        setFormError("Please enter a valid 6-digit OTP.");
+        return;
       }
     } else if (accessMode === "email") {
-      if (!/\S+@\S+\.\S+/.test(value)) {
-        setFormError("Please enter a valid email address.")
-        return
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Improved email regex
+      if (!emailRegex.test(value)) {
+        setFormError("Please enter a valid email address.");
+        return;
       }
     } else if (accessMode === "name") {
       if (value.length < 2) {
-        setFormError("Please enter your full name.")
-        return
+        setFormError("Please enter your full name.");
+        return;
       }
     } else if (accessMode === "phone") {
-      if (!/^\d{7,15}$/.test(value)) {  // Simple phone validation (7 to 15 digits)
-        setFormError("Please enter a valid phone number.")
-        return
+      if (!/^\d{7,15}$/.test(value)) { // Simple phone validation (7 to 15 digits)
+        setFormError("Please enter a valid phone number.");
+        return;
       }
     }
   
-    setFormError("")
-    const accessValue = value.toLowerCase()
+    setFormError("");
+    const accessValue = value.toLowerCase();
   
     const payload = {
       event_id: event.id,
       mode: "online",
-    }
+    };
   
     if (accessMode === "otp") {
-      payload.otp = accessValue
+      payload.otp = accessValue;
     } else if (accessMode === "email") {
-      payload.email = accessValue
+      payload.email = accessValue;
     } else if (accessMode === "name") {
-      payload.name = accessValue
+      payload.name = accessValue;
     } else if (accessMode === "phone") {
-      payload.phone = accessValue
+      payload.phone = accessValue;
     }
   
-    dispatch(markAttendee(payload))
-  }
+    dispatch(markAttendee(payload));
+  };
   
-
   const handleQuickRegistration = () => {
     setShowQuickRegistration(true)
   }
