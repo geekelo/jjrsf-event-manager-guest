@@ -125,7 +125,7 @@ const QuickRegistrationForm = ({ eventId, onClose }) => {
           <div className="quick-reg-header">
             <h3>Registration Successful!</h3>
             <p> Kindly copy your OTP to accesss the event or check your email</p>
-            <h1 className="otp-background">${quickRegistrationAttendee.quick_registrations_attendee.otp}</h1>
+            <h1 className="otp-background">{quickRegistrationAttendee.quick_registrations_attendee.otp}</h1>
             <button onClick={onClose} className="close-button">
               <X size={18} />
             </button>
