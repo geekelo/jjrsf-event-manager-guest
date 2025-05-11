@@ -446,6 +446,10 @@
   border-color: var(--danger);
 }
 
+.active-mode {
+  color: var(--danger);
+}
+
 .error-message {
   color: var(--danger);
   font-size: 0.8rem;
