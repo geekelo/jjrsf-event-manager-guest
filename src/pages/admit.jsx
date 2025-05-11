@@ -20,6 +20,8 @@ import {
   Tag,
   Calendar,
   Users,
+  User,
+  Phone,
   X,
   CheckCircle,
 } from "lucide-react";
