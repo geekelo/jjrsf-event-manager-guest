@@ -1,12 +1,10 @@
 export const formatDescription = (description) => {
   const lines = description.split("\n");
 
-  const formattedDescription = lines.map((line, index) => (
-    <React.Fragment key={index}>
+  return lines.map((line, index) => (
+    <div key={index}>
       {line}
       <br />
-    </React.Fragment>
+    </div>
   ));
-
-  return formattedDescription;
 };
