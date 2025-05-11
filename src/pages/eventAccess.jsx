@@ -11,6 +11,7 @@ import {
   fetchStreamingPlatforms,
   clearStreams,
 } from "../redux/slices/streamSlice";
+import { formatDescription } from "../utils/formatDescription";
 import {
   CalendarDays,
   Clock,
@@ -159,8 +160,6 @@ const GuestEventAccess = () => {
           setCountdown("REWATCH EVENT");
         }
       }, 1000);
-
-      alert(event.status);
 
       return () => clearInterval(interval);
     }
@@ -552,11 +551,14 @@ const GuestEventAccess = () => {
           <h1 className="event-title">{event.name}</h1>
           <p className="event-date">
             <CalendarDays size={18} />
-            {new Date(event.start_date).toLocaleDateString("en-US", {
+            {new Date(`${event.start_date}T${event.start_time}`).toLocaleDateString("en-US", {
               weekday: "long",
               year: "numeric",
               month: "long",
               day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false, // Use 24-hour format
             })}
           </p>
 
@@ -580,7 +582,7 @@ const GuestEventAccess = () => {
               {event.description && (
                 <div className="event-description">
                   <h3>About This Event</h3>
-                  <p>{event.description}</p>
+                  <p>{formatDescription(event.description)}</p>
                 </div>
               )}
 
@@ -596,22 +598,16 @@ const GuestEventAccess = () => {
                   <Calendar size={18} />
                   <span>
                     Registration Deadline:{" "}
-                    {new Date(event.registration_deadline).toLocaleDateString(
-                      "en-US",
-                      {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      }
-                    )}
-                    {new Date(event.registration_deadline_time).toLocaleString(
-                      "en-US",
-                      {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: false, // Optional: Use 12-hour format
-                      }
-                    )}
+                    {new Date(
+                      `${event.registration_deadline}T${event.registration_deadline_time}`
+                    ).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false, // Use 24-hour format
+                    })}
                   </span>
                 </div>
               </div>
