@@ -255,28 +255,28 @@ const renderSelectedInput = () => {
   const handleValidation = () => {
     const value = input.join("").trim();
   
-    if (accessMode === "otp") {
-      if (value.length !== 6) {
-        setFormError("Please enter a valid 6-digit OTP.");
-        return;
-      }
-    } else if (accessMode === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Improved email regex
-      if (!emailRegex.test(value)) {
-        setFormError("Please enter a valid email address.");
-        return;
-      }
-    } else if (accessMode === "name") {
-      if (value.length < 2) {
-        setFormError("Please enter your full name.");
-        return;
-      }
-    } else if (accessMode === "phone") {
-      if (!/^\d{7,15}$/.test(value)) { // Simple phone validation (7 to 15 digits)
-        setFormError("Please enter a valid phone number.");
-        return;
-      }
-    }
+    // if (accessMode === "otp") {
+    //   if (value.length !== 6) {
+    //     setFormError("Please enter a valid 6-digit OTP.");
+    //     return;
+    //   }
+    // } else if (accessMode === "email") {
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Improved email regex
+    //   if (!emailRegex.test(value)) {
+    //     setFormError("Please enter a valid email address.");
+    //     return;
+    //   }
+    // } else if (accessMode === "name") {
+    //   if (value.length < 2) {
+    //     setFormError("Please enter your full name.");
+    //     return;
+    //   }
+    // } else if (accessMode === "phone") {
+    //   if (!/^\d{7,15}$/.test(value)) { // Simple phone validation (7 to 15 digits)
+    //     setFormError("Please enter a valid phone number.");
+    //     return;
+    //   }
+    // }
   
     setFormError("");
     const accessValue = value.toLowerCase();
