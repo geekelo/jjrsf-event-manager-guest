@@ -129,7 +129,7 @@ const eventsSlice = createSlice({
         state.registrationError = null
         state.registrationSuccess = false
       })
-      .addCase(registerForEvent.fulfilled, (state) => {
+      .addCase(registerForEvent.fulfilled, (state, action) => {
         state.registrationLoading = false
         state.registrationSuccess = true
         state.registeredAttendee = action.payload
