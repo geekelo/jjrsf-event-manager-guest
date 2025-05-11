@@ -130,8 +130,7 @@ const EventRegistration = () => {
 
   useEffect(() => {
     if (registrationSuccess) {
-      console.log("Registration successful:", registeredAttendee)
-      toast.success(`Successfully registered for ${event.name}! Kindly copy your OTP to accesss event is.`)
+      toast.success(`Successfully registered for ${event.name}! Kindly copy your OTP to accesss event`)
       // Redirect after successful registration
       const timer = setTimeout(() => {
         navigate(`/event/${unique_id}`)
@@ -199,7 +198,7 @@ const EventRegistration = () => {
             <h2>Registration Successful!</h2>
             <p>Thank you for registering for {event.name}.</p>
             <p> Kindly copy your OTP to accesss the event</p>
-            <h1 className="otp-background"> 3333.</h1>
+            <h1 className="otp-background">${registeredAttendee.attendee.otp}</h1>
             <p>You will be redirected to the event page shortly.</p>
           </div>
         </div>
