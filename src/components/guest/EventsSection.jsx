@@ -8,9 +8,9 @@ const EventsSection = ({ events, loading }) => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("upcoming")
 
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" }
-    return new Date(dateString).toLocaleDateString("en-US", options)
+  const formatDate = (dateString, timeString) => {
+    const options = { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }
+    return new Date(`${dateString}T${timeString}`).toLocaleDateString("en-US", options)
   }
 
   const today = new Date()
@@ -130,8 +130,8 @@ const EventsSection = ({ events, loading }) => {
                       </div>
                       <span>
                         {event.start_date === event.end_date
-                          ? formatDate(event.start_date)
-                          : `${formatDate(event.start_date)} - ${formatDate(event.end_date)}`}
+                          ? formatDate(event.start_date, event.start_time)
+                          : `${formatDate(event.start_date, event.start_time)} - ${formatDate(event.end_date, event.end_time)}`}
                       </span>
                     </div>
                     {event.location && (
