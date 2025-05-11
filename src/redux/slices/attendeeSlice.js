@@ -3,7 +3,7 @@ import axiosInstance from "../../config"
 
 export const markAttendee = createAsyncThunk(
   "attendee/markAttendee",
-  async ({ event_id, mode, email, otp }, { rejectWithValue }) => {
+  async ({ event_id, mode, email, otp, name, phone}, { rejectWithValue }) => {
     try {
       const payload = {
         event_id,
@@ -13,6 +13,8 @@ export const markAttendee = createAsyncThunk(
       // Add optional parameters if provided
       if (email) payload.email = email
       if (otp) payload.otp = otp
+      if (name) payload.name = name
+      if (phone) payload.phone = phone
       
       const res = await axiosInstance.patch("/api/v1/mark_attendee", payload)
       return res.data
