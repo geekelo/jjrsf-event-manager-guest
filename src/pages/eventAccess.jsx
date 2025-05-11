@@ -298,8 +298,9 @@ const GuestEventAccess = () => {
 
   const handleValidation = () => {
     // Use the appropriate value based on the accessMode
-    const value = accessMode === "otp" ? input.join("").trim() : singleInput.trim();
-  
+    const value =
+      accessMode === "otp" ? input.join("").trim() : singleInput.trim();
+
     // Validation logic for each mode
     if (accessMode === "otp") {
       if (value.length !== 6) {
@@ -318,21 +319,22 @@ const GuestEventAccess = () => {
         return;
       }
     } else if (accessMode === "phone") {
-      if (!/^\+?\d{7,15}$/.test(value)) { // Allow phone numbers with optional '+' and 7-15 digits
+      if (!/^\+?\d{7,15}$/.test(value)) {
+        // Allow phone numbers with optional '+' and 7-15 digits
         setFormError("Please enter a valid phone number.");
         return;
       }
     }
-  
+
     // Clear any existing errors
     setFormError("");
-  
+
     // Prepare the payload
     const payload = {
       event_id: event.id,
       mode: "online",
     };
-  
+
     // Add the appropriate field to the payload based on the accessMode
     if (accessMode === "otp") {
       payload.otp = value;
@@ -343,7 +345,7 @@ const GuestEventAccess = () => {
     } else if (accessMode === "phone") {
       payload.phone = value;
     }
-  
+
     // Dispatch the action with the payload
     dispatch(markAttendee(payload));
   };
@@ -525,7 +527,8 @@ const GuestEventAccess = () => {
     );
   }
 
-  const isRegistrationClosed = event.registration_deadline_status
+  const isRegistrationClosed =
+    event.registration_deadline_status === "closed" ? true : false;
   const isEventPastOrOngoing = new Date() >= new Date(event.start_date);
   const showAttend =
     new Date(event.start_date).toDateString() === new Date().toDateString() ||
@@ -599,6 +602,14 @@ const GuestEventAccess = () => {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
+                      }
+                    )}
+                    {new Date(event.registration_deadline_time).toLocaleString(
+                      "en-US",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false, // Optional: Use 12-hour format
                       }
                     )}
                   </span>
