@@ -104,20 +104,59 @@ const Admit = () => {
     }
   }, [event]);
 
-  const getInputLabel = () => {
-    switch (accessMode) {
-      case "otp":
-        return "Enter 6-digit OTP";
-      case "email":
-        return "Enter your Email Address";
-      case "name":
-        return "Enter your Full Name";
-      case "phone":
-        return "Enter your Phone Number";
-      default:
-        return "";
-    }
-  };
+
+const getInputLabel = () => {
+  switch (accessMode) {
+    case "otp":
+      return "Enter 6-digit OTP";
+    case "email":
+      return "Enter your Email Address";
+    case "name":
+      return "Enter your Full Name";
+    case "phone":
+      return "Enter your Phone Number";
+    default:
+      return "";
+  }
+};
+
+// 2. Handle toggling modes
+const toggleToMode = (mode) => {
+  setAccessMode(mode);
+  setSingleInput("");
+  setInput(mode === "otp" ? ["", "", "", "", "", ""] : [""]);
+  setFormError("");
+};
+
+// 3. Render all <p> toggle options
+const renderModeOptions = () => {
+  const modes = [
+    { key: "otp", label: "Use 6-digit OTP", icon: <Key size={14} /> },
+    { key: "email", label: "Use email instead", icon: <Mail size={14} /> },
+    { key: "name", label: "Use name instead", icon: <User size={14} /> },
+    {
+      key: "phone",
+      label: "Use phone number instead",
+      icon: <Phone size={14} />,
+    },
+  ];
+
+  return (
+    <div className="mode-options">
+      {modes.map((mode) => (
+        <p
+          key={mode.key}
+          onClick={() => toggleToMode(mode.key)}
+          className={accessMode === mode.key ? "active-mode" : ""}
+          style={{ cursor: "pointer", marginBottom: "8px" }}
+        >
+          {mode.icon}
+          <span style={{ marginLeft: "5px" }}>{mode.label}</span>
+        </p>
+      ))}
+    </div>
+  );
+};
 
   // 4. Render the selected input
   const renderSelectedInput = () => {
@@ -185,13 +224,6 @@ const Admit = () => {
         placeholder={placeholder}
       />
     );
-  };
-
-  const toggleToMode = (mode) => {
-    setAccessMode(mode);
-    setSingleInput("");
-    setInput(mode === "otp" ? ["", "", "", "", "", ""] : [""]);
-    setFormError("");
   };
 
   const handleValidation = () => {
@@ -410,49 +442,10 @@ const Admit = () => {
                 ? "Join Live Now"
                 : "Watch Recording"}
             </h3>
-            <label>
-              {getInputLabel()}
-            </label>
+            <label>{getInputLabel()}</label>
             {renderSelectedInput()}
 
-            {/* OTP Input as 6 separate boxes */}
-            {accessMode === "otp" && (
-              <div className="otp-input-container">
-                {input.map((char, idx) => (
-                  <input
-                    key={idx}
-                    type="text"
-                    maxLength="1"
-                    value={char}
-                    onChange={(e) => {
-                      const newInput = [...input];
-                      newInput[idx] = e.target.value;
-                      setInput(newInput);
-
-                      // Auto-focus next input field after entry
-                      if (e.target.value && idx < 5) {
-                        const nextInput = e.target.nextElementSibling;
-                        if (nextInput) {
-                          nextInput.focus();
-                        }
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      // Handle backspace to go to previous input
-                      if (e.key === "Backspace" && !char && idx > 0) {
-                        const prevInput = e.target.previousElementSibling;
-                        if (prevInput) {
-                          prevInput.focus();
-                        }
-                      }
-                    }}
-                    className="otp-input"
-                  />
-                ))}
-              </div>
-            )}
-
-            {accessMode === "email" && (
+            {/* {accessMode === "email" && (
               <input
                 type="email"
                 value={input.join("")}
@@ -460,7 +453,7 @@ const Admit = () => {
                 className="access-input"
                 placeholder="Enter your email address"
               />
-            )}
+            )} */}
 
             {formError && (
               <p className="error-msg">
@@ -468,7 +461,9 @@ const Admit = () => {
                 {formError}
               </p>
             )}
-
+            
+            {renderModeOptions()}
+            
             <button
               onClick={handleValidation}
               className="watch-btn"
