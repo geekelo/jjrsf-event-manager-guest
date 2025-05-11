@@ -136,7 +136,7 @@ const GuestEventAccess = () => {
         const timeLeft = start - now;
 
         // Determine event status
-        if (now < start) {
+        if (event.status === "upcoming") {
           setEventStatus("upcoming");
           // Calculate countdown for upcoming events
           const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
@@ -151,14 +151,16 @@ const GuestEventAccess = () => {
           } else {
             setCountdown(`${hrs}h ${mins}m ${secs}s`);
           }
-        } else if (now >= start && now <= end) {
+        } else if (event.status === "ongoing") {
           setEventStatus("ongoing");
           setCountdown("EVENT IS LIVE TODAY!");
-        } else if (now > end) {
+        } else if (event.status === "completed") {
           setEventStatus("completed");
           setCountdown("REWATCH EVENT");
         }
       }, 1000);
+
+      alert(event.status);
 
       return () => clearInterval(interval);
     }
@@ -523,8 +525,7 @@ const GuestEventAccess = () => {
     );
   }
 
-  const isRegistrationClosed =
-    new Date() > new Date(event.registration_deadline);
+  const isRegistrationClosed = event.registration_deadline_status
   const isEventPastOrOngoing = new Date() >= new Date(event.start_date);
   const showAttend =
     new Date(event.start_date).toDateString() === new Date().toDateString() ||
