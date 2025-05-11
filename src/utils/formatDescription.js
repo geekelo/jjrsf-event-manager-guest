@@ -1,4 +1,4 @@
-const formatDescription = (description) => {
+export const formatDescription = (description) => {
   const lines = description.split("\n");
 
   const formattedDescription = lines.map((line, index) => (
