@@ -401,8 +401,9 @@ const renderModeOptions = () => {
                   minute: "2-digit",
                   hour12: false, // Use 24-hour format
                 })}
+                {" "}
+                (GMT+1)
               </span>
-              <span>(GMT+1)</span>
             </div>
           </div>
         </div>
