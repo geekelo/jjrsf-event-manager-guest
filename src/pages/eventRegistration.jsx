@@ -197,7 +197,7 @@ const EventRegistration = () => {
             </div>
             <h2>Registration Successful!</h2>
             <p>Thank you for registering for {event.name}.</p>
-            <p> Kindly copy your OTP to accesss the event</p>
+            <p> Kindly copy your OTP to access the event</p>
             <h1 className="otp-background">{registeredAttendee.attendee.otp}</h1>
             <p>You will be redirected to the event page shortly.</p>
           </div>
