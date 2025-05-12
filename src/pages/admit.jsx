@@ -352,7 +352,7 @@ const renderModeOptions = () => {
             hour12: false, // Use 24-hour format
           }
         )} 
-        <span>&nbps;(GMT+1)</span>
+        <span>(GMT+1)</span>
       </p>
 
       <div className="event-card">
@@ -402,6 +402,7 @@ const renderModeOptions = () => {
                   hour12: false, // Use 24-hour format
                 })}
               </span>
+              <span>(GMT+1)</span>
             </div>
           </div>
         </div>
