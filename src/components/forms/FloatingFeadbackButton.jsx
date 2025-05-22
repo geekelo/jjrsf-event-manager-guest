@@ -15,7 +15,7 @@ const FloatingFeedbackButton = ({ eventId }) => {
     <>
       <button className="floating-feedback-button" onClick={toggleFeedbackForm}>
         <MessageSquare size={20} />
-        <span>Give Feedback</span>
+        <span>Give your Comments</span>
       </button>
 
       {showFeedbackForm && <FeedbackForm eventId={eventId} onClose={() => setShowFeedbackForm(false)} />}
