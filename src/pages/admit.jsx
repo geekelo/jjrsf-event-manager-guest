@@ -424,7 +424,7 @@ const renderModeOptions = () => {
           <p className="countdown">Admit Guest</p>
         </div>
 
-        {isEventPastOrOngoing && (
+        {isRegistrationClosed && (
           <div className="quick-registration-section">
             <button
               onClick={handleQuickRegistration}

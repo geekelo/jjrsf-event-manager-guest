@@ -637,7 +637,7 @@ const GuestEventAccess = () => {
               </p>
             </div>
 
-            {isEventPastOrOngoing && (
+            {isRegistrationClosed && (
               <div className="quick-registration-section">
                 <button
                   onClick={handleQuickRegistration}
