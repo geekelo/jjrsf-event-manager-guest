@@ -716,7 +716,6 @@ const GuestEventAccess = () => {
             error={streamsError}
             eventName={event.name}
           />
-          {event && <FloatingFeedbackButton eventId={event.id} />}
         </>
       )}
 
@@ -726,6 +725,7 @@ const GuestEventAccess = () => {
           onClose={closeQuickRegistration}
         />
       )}
+      {event && <FloatingFeedbackButton eventId={event.id} />}
     </div>
   );
 };
