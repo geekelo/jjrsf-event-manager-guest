@@ -449,7 +449,7 @@ const renderModeOptions = () => {
                 : "Watch Recording"}
             </h3>
             <label>{getInputLabel()}</label>
-            {/* {renderSelectedInput()} */}
+            {renderSelectedInput()}
 
             {/* {accessMode === "email" && (
               <input
@@ -489,8 +489,8 @@ const renderModeOptions = () => {
               )}
             </button>
 
-            <label>{getInputLabel()}</label>
-            {renderSelectedInput()}
+            {/* <label>{getInputLabel()}</label>
+            {renderSelectedInput()} */}
           </div>
         )}
       </div>
