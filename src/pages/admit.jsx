@@ -443,13 +443,13 @@ const renderModeOptions = () => {
           <div className="access-section">
             <h3>
               {eventStatus === "upcoming"
-                ? "Attend Online"
+                ? "Attend Onsite"
                 : eventStatus === "ongoing"
                 ? "Join Live Now"
                 : "Watch Recording"}
             </h3>
             <label>{getInputLabel()}</label>
-            {renderSelectedInput()}
+            {/* {renderSelectedInput()} */}
 
             {/* {accessMode === "email" && (
               <input
