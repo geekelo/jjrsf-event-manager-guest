@@ -443,7 +443,7 @@ const renderModeOptions = () => {
           <div className="access-section">
             <h3>
               {eventStatus === "upcoming"
-                ? "Attend Online"
+                ? "Admit Onsite"
                 : eventStatus === "ongoing"
                 ? "Join Live Now"
                 : "Watch Recording"}
@@ -451,15 +451,7 @@ const renderModeOptions = () => {
             <label>{getInputLabel()}</label>
             {renderSelectedInput()}
 
-            {/* {accessMode === "email" && (
-              <input
-                type="email"
-                value={input.join("")}
-                onChange={(e) => setInput([e.target.value])}
-                className="access-input"
-                placeholder="Enter your email address"
-              />
-            )} */}
+            
 
             {formError && (
               <p className="error-msg">
@@ -468,7 +460,7 @@ const renderModeOptions = () => {
               </p>
             )}
             
-            {renderModeOptions()}
+            {/* {renderModeOptions()} */}
             
             <button
               onClick={handleValidation}
