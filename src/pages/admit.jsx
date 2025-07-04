@@ -489,8 +489,7 @@ const renderModeOptions = () => {
               )}
             </button>
 
-            {/* <label>{getInputLabel()}</label>
-            {renderSelectedInput()} */}
+        
           </div>
         )}
       </div>
