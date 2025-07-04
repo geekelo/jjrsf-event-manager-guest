@@ -264,7 +264,7 @@ const renderModeOptions = () => {
     // Prepare the payload
     const payload = {
       event_id: event.id,
-      mode: "online",
+      mode: "offline",
     };
 
     // Add the appropriate field to the payload based on the accessMode
