@@ -25,11 +25,15 @@ import {
   X,
   CheckCircle,
 } from "lucide-react";
+import { useLocation } from "react-router-dom";
+
 import { formatDescription } from "../utils/formatDescription";
 import QuickRegistrationForm from "../components/forms/QuickRegistrationForm";
 
 const Admit = () => {
   const { unique_id } = useParams();
+  const location = useLocation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -228,59 +232,46 @@ const renderModeOptions = () => {
     );
   };
 
-  const handleValidation = () => {
-    // Use the appropriate value based on the accessMode
-    const value =
-      accessMode === "otp" ? input.join("").trim() : singleInput.trim();
+ const handleValidation = () => {
+  const value = accessMode === "otp" ? input.join("").trim() : singleInput.trim();
 
-    // Validation logic for each mode
-    if (accessMode === "otp") {
-      if (value.length !== 6) {
-        setFormError("Please enter a valid 6-digit OTP.");
-        return;
-      }
-    } else if (accessMode === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation
-      if (!emailRegex.test(value)) {
-        setFormError("Please enter a valid email address.");
-        return;
-      }
-    } else if (accessMode === "name") {
-      if (value.length < 2) {
-        setFormError("Please enter your full name.");
-        return;
-      }
-    } else if (accessMode === "phone") {
-      if (!/^\+?\d{7,15}$/.test(value)) {
-        // Allow phone numbers with optional '+' and 7-15 digits
-        setFormError("Please enter a valid phone number.");
-        return;
-      }
+  // Validation logic
+  if (accessMode === "otp" && value.length !== 6) {
+    setFormError("Please enter a valid 6-digit OTP.");
+    return;
+  } else if (accessMode === "email") {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      setFormError("Please enter a valid email address.");
+      return;
     }
+  } else if (accessMode === "name" && value.length < 2) {
+    setFormError("Please enter your full name.");
+    return;
+  } else if (accessMode === "phone" && !/^\+?\d{7,15}$/.test(value)) {
+    setFormError("Please enter a valid phone number.");
+    return;
+  }
 
-    // Clear any existing errors
-    setFormError("");
+  setFormError("");
 
-    // Prepare the payload
-    const payload = {
-      event_id: event.id,
-      mode: "online",
-    };
+  // ✅ Dynamically set the mode based on URL
+  const isFrontDesk = location.pathname.includes("frontdesk");
+  const mode = isFrontDesk ? "offline" : "online";
 
-    // Add the appropriate field to the payload based on the accessMode
-    if (accessMode === "otp") {
-      payload.otp = value;
-    } else if (accessMode === "email") {
-      payload.email = value;
-    } else if (accessMode === "name") {
-      payload.name = value;
-    } else if (accessMode === "phone") {
-      payload.phone = value;
-    }
-
-    // Dispatch the action with the payload
-    dispatch(markAttendee(payload));
+  const payload = {
+    event_id: event.id,
+    mode,
   };
+
+  if (accessMode === "otp") payload.otp = value;
+  if (accessMode === "email") payload.email = value;
+  if (accessMode === "name") payload.name = value;
+  if (accessMode === "phone") payload.phone = value;
+
+  dispatch(markAttendee(payload));
+};
+
 
   const handleQuickRegistration = () => {
     setShowQuickRegistration(true);
@@ -443,7 +434,7 @@ const renderModeOptions = () => {
           <div className="access-section">
             <h3>
               {eventStatus === "upcoming"
-                ? "Attend Online"
+                ? "Admit Onsite"
                 : eventStatus === "ongoing"
                 ? "Join Live Now"
                 : "Watch Recording"}
@@ -451,15 +442,7 @@ const renderModeOptions = () => {
             <label>{getInputLabel()}</label>
             {renderSelectedInput()}
 
-            {/* {accessMode === "email" && (
-              <input
-                type="email"
-                value={input.join("")}
-                onChange={(e) => setInput([e.target.value])}
-                className="access-input"
-                placeholder="Enter your email address"
-              />
-            )} */}
+            
 
             {formError && (
               <p className="error-msg">
@@ -468,7 +451,7 @@ const renderModeOptions = () => {
               </p>
             )}
             
-            {renderModeOptions()}
+            {/* {renderModeOptions()} */}
             
             <button
               onClick={handleValidation}

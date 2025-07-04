@@ -373,6 +373,7 @@
   align-items: center;
   padding: 20px;
   border-bottom: 1px solid rgba(68, 39, 119, 0.1);
+  flex-direction: column;
 }
 
 .quick-reg-header h3 {
