@@ -292,8 +292,6 @@ label {
   margin-top: 5px;
 }
 
-input[type="text"],
-input[type="email"],
 select {
   width: 100%;
   padding: 15px 15px 15px 15px;

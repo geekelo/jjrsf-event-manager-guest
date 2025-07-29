@@ -255,14 +255,11 @@ const renderModeOptions = () => {
 
   setFormError("");
 
-  // ✅ Dynamically set the mode based on URL
-  const isFrontDesk = location.pathname.includes("frontdesk");
-  const mode = isFrontDesk ? "offline" : "online";
-
-  const payload = {
-    event_id: event.id,
-    mode,
-  };
+    // Prepare the payload
+    const payload = {
+      event_id: event.id,
+      mode: "offline",
+    };
 
   if (accessMode === "otp") payload.otp = value;
   if (accessMode === "email") payload.email = value;
@@ -434,7 +431,7 @@ const renderModeOptions = () => {
           <div className="access-section">
             <h3>
               {eventStatus === "upcoming"
-                ? "Admit Onsite"
+                ? "Attend Onsite"
                 : eventStatus === "ongoing"
                 ? "Join Live Now"
                 : "Watch Recording"}
@@ -472,8 +469,7 @@ const renderModeOptions = () => {
               )}
             </button>
 
-            <label>{getInputLabel()}</label>
-            {renderSelectedInput()}
+        
           </div>
         )}
       </div>
